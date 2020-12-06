@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +22,7 @@ import com.careydevelopment.ecosystem.user.service.JwtUserDetailsService;
 import com.careydevelopment.ecosystem.user.util.JwtTokenUtil;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.SignatureException;
 
 
 @Component
@@ -50,10 +52,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 				username = jwtTokenUtil.getUsernameFromToken();
 				validateToken(jwtTokenUtil, username, chain, request, response);
 			} catch (IllegalArgumentException e) {
-				LOG.error("Unable to get JWT Token", e);
-			} catch (ExpiredJwtException e) {
-				LOG.error("JWT Token has expired", e);
-			}
+                response.sendError(HttpStatus.UNAUTHORIZED.value(), "Invalid token");
+            } catch (ExpiredJwtException e) {
+                response.sendError(HttpStatus.UNAUTHORIZED.value(), "Token expired");
+            } catch (SignatureException e) {
+                response.sendError(HttpStatus.UNAUTHORIZED.value(), "Invalid signature");
+            }
 		} else {
 			chain.doFilter(request, response);
 		}
