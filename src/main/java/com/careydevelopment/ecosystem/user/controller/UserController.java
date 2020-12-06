@@ -106,4 +106,11 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
+    
+    
+    @GetMapping("/me")
+    public ResponseEntity<?> me() {
+        User user = securityUtil.getCurrentUser();
+        return ResponseEntity.ok(user);
+    }
 }
