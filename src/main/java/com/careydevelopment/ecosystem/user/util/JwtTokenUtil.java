@@ -15,10 +15,9 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 public class JwtTokenUtil {
 
-	private static final long JWT_TOKEN_VALIDITY = 24 * 60 * 60 * 1000;
+	private static final long JWT_TOKEN_VALIDITY = 60 * 1000;
 	
 	private static final String AUDIENCE = "careydevelopment-ecosystem-users";
-	private static final String ISSUER = "careydevelopment";
 	
 	public static String SECRET;
 	
@@ -88,7 +87,6 @@ public class JwtTokenUtil {
 		String token= Jwts.builder()
 				.setClaims(claims)
 				.setSubject(subject)
-				.setIssuer(ISSUER)
 				.setAudience(AUDIENCE)
 				.setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY))
