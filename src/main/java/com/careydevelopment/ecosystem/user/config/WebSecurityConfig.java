@@ -3,7 +3,6 @@ package com.careydevelopment.ecosystem.user.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -53,6 +52,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	
+	//TODO: Harden security before going to production
 	@Bean
 	public CorsFilter corsFilter() {
     	UrlBasedCorsConfigurationSource source = new 
@@ -76,7 +76,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		    .addFilter(new BearerTokenAuthenticationFilter(authenticationManager()))
 		    .addFilter(new CredentialsAuthenticationFilter(authenticationManager()))
 		    .authorizeRequests() 
-		    .anyRequest().authenticated().and()
+            .anyRequest().access("hasAuthority('CAREYDEVELOPMENT_CRM_USER')").and()
 		    .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
 		    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 	}

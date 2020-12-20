@@ -14,7 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.careydevelopment.ecosystem.user.controller.JwtAuthenticationController;
+import com.careydevelopment.ecosystem.exception.user.security.UserServiceAuthenticationException;
 import com.careydevelopment.ecosystem.user.model.JwtRequest;
 import com.careydevelopment.ecosystem.user.model.JwtResponse;
 import com.careydevelopment.ecosystem.user.model.User;
@@ -41,13 +41,14 @@ public class CredentialsAuthenticationFilter extends UsernamePasswordAuthenticat
         
         try {
             JwtRequest jwtRequest = new ObjectMapper().readValue(req.getInputStream(), JwtRequest.class);
-            LOG.debug("The request is " + jwtRequest);
+            LOG.debug("The JWT request is " + jwtRequest);
             
             auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     jwtRequest.getUsername(), jwtRequest.getPassword()));
                         
         } catch (Exception e) {
             LOG.error("Problem logging in user with credentials!", e);
+            throw new UserServiceAuthenticationException(e.getMessage());
         }
         
         return auth;
