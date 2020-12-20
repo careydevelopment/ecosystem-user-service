@@ -1,5 +1,7 @@
 package com.careydevelopment.ecosystem.user.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,16 +20,18 @@ import com.careydevelopment.ecosystem.user.model.User;
 import com.careydevelopment.ecosystem.user.util.JwtTokenUtil;
 
 
-
 @RestController
 @CrossOrigin
 public class JwtAuthenticationController {
 
+    private static final Logger LOG = LoggerFactory.getLogger(JwtAuthenticationController.class);
+
+    
 	@Autowired
 	private AuthenticationManager authenticationManager;
 
 	
-	@PostMapping(value = "/authenticate")
+	@PostMapping(value = "/authenticate2")
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
 		final User user = authenticate(authenticationRequest);
 		final JwtTokenUtil jwtTokenUtil = JwtTokenUtil.generateToken(user);

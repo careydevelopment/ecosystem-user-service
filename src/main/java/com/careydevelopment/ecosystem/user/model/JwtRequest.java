@@ -1,5 +1,7 @@
 package com.careydevelopment.ecosystem.user.model;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+
 public class JwtRequest {
 	
 	private String username;
@@ -27,4 +29,8 @@ public class JwtRequest {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this);
+    }
 }

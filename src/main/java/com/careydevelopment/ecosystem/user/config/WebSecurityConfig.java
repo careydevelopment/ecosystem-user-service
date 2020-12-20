@@ -14,6 +14,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 
 @Configuration
@@ -50,16 +53,29 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	
+	@Bean
+	public CorsFilter corsFilter() {
+    	UrlBasedCorsConfigurationSource source = new 
+    	UrlBasedCorsConfigurationSource();
+    	CorsConfiguration config = new CorsConfiguration();
+    	config.setAllowCredentials(true);
+    	config.addAllowedOrigin("*");
+    	config.addAllowedHeader("*");
+    	config.addAllowedMethod("*");
+    	source.registerCorsConfiguration("/**", config);
+    	
+    	return new CorsFilter(source);
+	}
+	
+	
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity
 		    .cors().and()
 		    .csrf().disable()
 		    .addFilter(new BearerTokenAuthenticationFilter(authenticationManager()))
+		    .addFilter(new CredentialsAuthenticationFilter(authenticationManager()))
 		    .authorizeRequests() 
-		    .antMatchers("/authenticate").permitAll()
-		    .antMatchers("/utilities/**").permitAll()
-		    .antMatchers(HttpMethod.GET, "/contact/**").access("hasAuthority('JWT_USER')")
 		    .anyRequest().authenticated().and()
 		    .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
 		    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
