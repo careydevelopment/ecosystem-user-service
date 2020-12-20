@@ -29,5 +29,6 @@ public class UserService {
         User currentUser = securityUtil.getCurrentUser();
         
         user.setPassword(currentUser.getPassword());
+        user.setAuthorityNames(currentUser.getAuthorityNames());
     }
 }

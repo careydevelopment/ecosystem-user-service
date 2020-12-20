@@ -13,7 +13,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationFilter;
+
 
 @Configuration
 @EnableWebSecurity
@@ -25,12 +26,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private UserDetailsService jwtUserDetailsService;
 
-	@Autowired
-	private JwtRequestFilter jwtRequestFilter;
+    @Autowired
+    private JwtAuthenticationProvider jwtAuthenticationProvider;
 
 	
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+	    auth.authenticationProvider(jwtAuthenticationProvider);
 		auth.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoder());
 	}
 
@@ -53,7 +55,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		httpSecurity
 		    .cors().and()
 		    .csrf().disable()
-		    .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
+		    .addFilter(new BearerTokenAuthenticationFilter(authenticationManager()))
 		    .authorizeRequests() 
 		    .antMatchers("/authenticate").permitAll()
 		    .antMatchers("/utilities/**").permitAll()
