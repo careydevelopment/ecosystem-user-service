@@ -1,4 +1,4 @@
-package com.careydevelopment.ecosystem.exception.file;
+package com.careydevelopment.ecosystem.exception.user.file;
 
 public class CopyFileException extends Exception {
 
