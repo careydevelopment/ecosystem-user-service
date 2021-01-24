@@ -1,4 +1,4 @@
-package com.careydevelopment.ecosystem.exception.user.security;
+package com.careydevelopment.ecosystem.user.exception;
 
 import org.springframework.security.core.AuthenticationException;
 

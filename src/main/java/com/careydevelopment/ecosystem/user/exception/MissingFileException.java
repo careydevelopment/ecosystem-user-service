@@ -1,4 +1,4 @@
-package com.careydevelopment.ecosystem.exception.user.file;
+package com.careydevelopment.ecosystem.user.exception;
 
 public class MissingFileException extends Exception {
 

@@ -15,10 +15,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.careydevelopment.ecosystem.exception.user.file.CopyFileException;
-import com.careydevelopment.ecosystem.exception.user.file.FileTooLargeException;
-import com.careydevelopment.ecosystem.exception.user.file.ImageRetrievalException;
-import com.careydevelopment.ecosystem.exception.user.file.MissingFileException;
+import com.careydevelopment.ecosystem.user.exception.CopyFileException;
+import com.careydevelopment.ecosystem.user.exception.FileTooLargeException;
+import com.careydevelopment.ecosystem.user.exception.ImageRetrievalException;
+import com.careydevelopment.ecosystem.user.exception.MissingFileException;
 import com.careydevelopment.ecosystem.user.model.User;
 
 @Component

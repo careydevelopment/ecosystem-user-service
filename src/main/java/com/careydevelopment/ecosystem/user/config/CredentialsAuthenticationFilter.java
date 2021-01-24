@@ -14,7 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.careydevelopment.ecosystem.exception.user.security.UserServiceAuthenticationException;
+import com.careydevelopment.ecosystem.user.exception.UserServiceAuthenticationException;
 import com.careydevelopment.ecosystem.user.model.JwtRequest;
 import com.careydevelopment.ecosystem.user.model.JwtResponse;
 import com.careydevelopment.ecosystem.user.model.User;
