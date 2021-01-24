@@ -15,28 +15,28 @@ public class ResponseWriterUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(ResponseWriterUtil.class);
 	
-	public static void writeResponse(HttpServletResponse response, String str) {
-		try (PrintWriter writer = response.getWriter()) {
-			writer.write(str);
-			writer.flush();
-		} catch (IOException ie) {
-			LOG.error("Problem writing output to response!", ie);
-		}
-	}
+    public static void writeResponse(HttpServletResponse response, String message) {
+        try (PrintWriter writer = response.getWriter()) {
+            writer.write(message);
+            writer.flush();
+        } catch (IOException ie) {
+            LOG.error("Problem writing output to response!", ie);
+        }
+    }
 	
 	
-	public static void writeErrorResponse(HttpServletResponse response, String str) {
-		ResponseStatus status = new ResponseStatus();
-		status.setStatusCode(ResponseStatus.StatusCode.ERROR);
-		status.setMessage(str);
+    public static void writeErrorResponse(HttpServletResponse response, String message) {
+        ResponseStatus status = new ResponseStatus();
+        status.setStatusCode(ResponseStatus.StatusCode.ERROR);
+        status.setMessage(message);
 		
-		try (PrintWriter writer = response.getWriter()) {
-			String json = new ObjectMapper().writeValueAsString(status);
+        try (PrintWriter writer = response.getWriter()) {
+            String json = new ObjectMapper().writeValueAsString(status);
 			
-			writer.write(json);
+            writer.write(json);
 			writer.flush();
-		} catch (IOException ie) {
-			LOG.error("Problem writing output to response!", ie);
-		}
-	}
+        } catch (IOException ie) {
+            LOG.error("Problem writing output to response!", ie);
+        }
+    }
 }

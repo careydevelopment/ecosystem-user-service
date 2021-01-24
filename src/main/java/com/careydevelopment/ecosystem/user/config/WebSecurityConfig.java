@@ -1,9 +1,12 @@
 package com.careydevelopment.ecosystem.user.config;
 
+import java.nio.charset.StandardCharsets;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -70,26 +73,29 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
     
 	private BearerTokenAuthenticationFilter bearerTokenAuthenticationFilter() throws Exception {
-		BearerTokenAuthenticationFilter filter = new BearerTokenAuthenticationFilter(authenticationManager());
-		filter.setAuthenticationFailureHandler(authenticationFailureHandler());
+	    BearerTokenAuthenticationFilter filter = new BearerTokenAuthenticationFilter(authenticationManager());
+	    filter.setAuthenticationFailureHandler(authenticationFailureHandler());
 
-		return filter;
+	    return filter;
 	}
 	
 	
 	private CredentialsAuthenticationFilter credentialsAuthenticationFilter() throws Exception {
-		CredentialsAuthenticationFilter filter = new CredentialsAuthenticationFilter(authenticationManager());
-		filter.setAuthenticationFailureHandler(authenticationFailureHandler());
+	    CredentialsAuthenticationFilter filter = new CredentialsAuthenticationFilter(authenticationManager());
+	    filter.setAuthenticationFailureHandler(authenticationFailureHandler());
 
-		return filter;
+	    return filter;
 	}
 	
 	
 	private AuthenticationFailureHandler authenticationFailureHandler() {
-		return (request, response, ex) -> {
-			response.setStatus(HttpStatus.UNAUTHORIZED.value());
-			ResponseWriterUtil.writeErrorResponse(response, ex.getMessage());			
-		};
+	    return (request, response, ex) -> {
+	        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+	        response.setContentType(MediaType.APPLICATION_JSON.toString());
+	        response.setCharacterEncoding(StandardCharsets.UTF_8.displayName());
+	        
+	        ResponseWriterUtil.writeErrorResponse(response, ex.getMessage());			
+	    };
 	}
 	
 	
