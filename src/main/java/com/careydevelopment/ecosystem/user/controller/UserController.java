@@ -23,8 +23,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.careydevelopment.ecosystem.exception.user.file.FileTooLargeException;
-import com.careydevelopment.ecosystem.exception.user.file.MissingFileException;
+import com.careydevelopment.ecosystem.user.exception.FileTooLargeException;
+import com.careydevelopment.ecosystem.user.exception.MissingFileException;
 import com.careydevelopment.ecosystem.user.model.User;
 import com.careydevelopment.ecosystem.user.service.UserService;
 import com.careydevelopment.ecosystem.user.util.FileUtil;

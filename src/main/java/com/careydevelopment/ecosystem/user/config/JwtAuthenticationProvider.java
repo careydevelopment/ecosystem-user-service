@@ -12,7 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.server.resource.BearerTokenAuthenticationToken;
 import org.springframework.stereotype.Component;
 
-import com.careydevelopment.ecosystem.exception.user.security.UserServiceAuthenticationException;
+import com.careydevelopment.ecosystem.user.exception.UserServiceAuthenticationException;
 import com.careydevelopment.ecosystem.user.service.JwtUserDetailsService;
 import com.careydevelopment.ecosystem.user.util.JwtTokenUtil;
 import com.careydevelopment.ecosystem.user.util.PropertiesUtil;

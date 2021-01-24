@@ -3,6 +3,7 @@ package com.careydevelopment.ecosystem.user.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,17 +14,17 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationFilter;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+
+import com.careydevelopment.ecosystem.user.util.ResponseWriterUtil;
 
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-
-	@Autowired
-	private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
 	@Autowired
 	private UserDetailsService jwtUserDetailsService;
@@ -50,7 +51,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	public AuthenticationManager authenticationManagerBean() throws Exception {
 		return super.authenticationManagerBean();
 	}
-
+    
 	
 	//TODO: Harden security before going to production
 	@Bean
@@ -67,17 +68,40 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     	return new CorsFilter(source);
 	}
 	
+    
+	private BearerTokenAuthenticationFilter bearerTokenAuthenticationFilter() throws Exception {
+		BearerTokenAuthenticationFilter filter = new BearerTokenAuthenticationFilter(authenticationManager());
+		filter.setAuthenticationFailureHandler(authenticationFailureHandler());
+
+		return filter;
+	}
+	
+	
+	private CredentialsAuthenticationFilter credentialsAuthenticationFilter() throws Exception {
+		CredentialsAuthenticationFilter filter = new CredentialsAuthenticationFilter(authenticationManager());
+		filter.setAuthenticationFailureHandler(authenticationFailureHandler());
+
+		return filter;
+	}
+	
+	
+	private AuthenticationFailureHandler authenticationFailureHandler() {
+		return (request, response, ex) -> {
+			response.setStatus(HttpStatus.UNAUTHORIZED.value());
+			ResponseWriterUtil.writeErrorResponse(response, ex.getMessage());			
+		};
+	}
+	
 	
 	@Override
-	protected void configure(HttpSecurity httpSecurity) throws Exception {
+	protected void configure(HttpSecurity httpSecurity) throws Exception {		
 		httpSecurity
 		    .cors().and()
 		    .csrf().disable()
-		    .addFilter(new BearerTokenAuthenticationFilter(authenticationManager()))
-		    .addFilter(new CredentialsAuthenticationFilter(authenticationManager()))
-		    .authorizeRequests() 
+		    .addFilter(bearerTokenAuthenticationFilter())
+		    .addFilter(credentialsAuthenticationFilter())
+		    .authorizeRequests()
             .anyRequest().access("hasAuthority('CAREYDEVELOPMENT_CRM_USER')").and()
-		    .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
 		    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-	}
+	}	
 }
