@@ -1,13 +1,15 @@
 package com.careydevelopment.ecosystem.user.config;
 
+import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -49,13 +51,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	
-	@Bean
-	@Override
-	public AuthenticationManager authenticationManagerBean() throws Exception {
-		return super.authenticationManagerBean();
-	}
-    
-	
 	//TODO: Harden security before going to production
 	@Bean
 	public CorsFilter corsFilter() {
@@ -75,7 +70,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	private BearerTokenAuthenticationFilter bearerTokenAuthenticationFilter() throws Exception {
 	    BearerTokenAuthenticationFilter filter = new BearerTokenAuthenticationFilter(authenticationManager());
 	    filter.setAuthenticationFailureHandler(authenticationFailureHandler());
-
+	    
 	    return filter;
 	}
 	
