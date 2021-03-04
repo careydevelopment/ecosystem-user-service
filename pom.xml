@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.careydevelopment.ecosystem.user</groupId>
   <artifactId>ecosystem-user-service</artifactId>
-  <version>0.2.5-SNAPSHOT</version>
+  <version>0.2.6-SNAPSHOT</version>
   
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -51,11 +51,15 @@
         <dependency>
 		    <groupId>javax.validation</groupId>
 		    <artifactId>validation-api</artifactId>
-		</dependency>       
+		</dependency>     
+		<dependency>
+		    <groupId>javax.xml.bind</groupId> 
+		    <artifactId>jaxb-api</artifactId>
+		</dependency>	  
     </dependencies>
   
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>11</java.version>
     </properties>
   
     <build>
