@@ -26,8 +26,7 @@ node {
         }    
     }
     
-    
     stage('Cleanup') {
-		sh 'docker rmi ' + image + ':$BUILD_NUMBER'
+		sh "docker rmi $(docker images | grep 'ecosystem-user-service')"
     }
 }
