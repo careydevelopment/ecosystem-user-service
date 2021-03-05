@@ -1,4 +1,6 @@
 pipeline {
+	agent none
+	
     options {
         skipStagesAfterUnstable()
     }
