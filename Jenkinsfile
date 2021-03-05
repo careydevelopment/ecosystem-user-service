@@ -1,7 +1,6 @@
 node {
 	def app
 	def image = 'brianmcarey/ecosystem-user-service'
-	def tag = '0.2.6-SNAPSHOT'
 	
 	stage('Clone repository') {               
     	git branch: '0.2.6-devops-work',
@@ -18,16 +17,16 @@ node {
      
     stage('Build Image') {
     	unstash 'jar'
-		app = docker.build image + ':' + tag
+		app = docker.build image + ':$BUILD_NUMBER'
     }
     
     stage('Push') {
     	docker.withRegistry('https://registry.hub.docker.com', 'docker-hub') {            
-			app.push("$tag")
+			app.push("$BUILD_NUMBER")
         }    
     }
     
     stage('Cleanup') {
-		sh 'docker rmi brianmcarey/$image:$tag'
+		sh 'docker rmi brianmcarey/$image:$BUILD_NUMBER'
     }
 }
