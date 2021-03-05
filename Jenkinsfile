@@ -26,6 +26,7 @@ node {
         }    
     }
     
+    
     stage('Cleanup') {
 		sh 'docker rmi ' + image + ':$BUILD_NUMBER'
     }
