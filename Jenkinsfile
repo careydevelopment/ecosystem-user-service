@@ -24,4 +24,8 @@ node {
 			app.push("0.2.6-devops-work")
         }    
     }
+    
+    stage('Cleanup') {
+		sh 'docker rmi brianmcarey/ecosystem-user-service:0.2.6-devops-work'
+    }
 }
