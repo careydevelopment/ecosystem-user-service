@@ -32,7 +32,7 @@ node {
 			sh 'docker rmi registry.hub.docker.com/' + image + ':$BUILD_NUMBER'
 	    }
 	} catch (Exception e) {
-		println 'error'
+		println 'Error occurred during build process!'
 	} finally {
         junit '**/target/surefire-reports/TEST-*.xml'		
 	}
