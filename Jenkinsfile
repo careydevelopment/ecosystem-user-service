@@ -18,7 +18,7 @@ node {
      
     stage('Build Image') {
     	unstash 'jar'
-    	ls -la
+    	sh 'ls -la'
 		app = docker.build("0.2.6")
     }
     
