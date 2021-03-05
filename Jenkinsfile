@@ -1,7 +1,7 @@
 node {
-  stage ('Build') {
-    withMaven {
-      sh "mvn clean package"
+    docker.image('maven:3.6.3-jdk-11').inside('-v /root/.m2:/root/.m2') {
+        stage('Build') {
+            sh 'mvn -B clean package'
+        }
     }
-  }
 }
