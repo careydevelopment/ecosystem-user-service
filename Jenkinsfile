@@ -5,8 +5,6 @@ node {
     	git branch: '0.2.6-devops-work',
         credentialsId: 'GitHub Credentials',
         url: 'https://github.com/careydevelopment/ecosystem-user-service.git'
-	
-        sh "ls -lat"  
     } 
 
 	stage('Build JAR') {
@@ -18,14 +16,12 @@ node {
      
     stage('Build Image') {
     	unstash 'jar'
-    	sh 'ls -la'
-    	sh 'ls -la ./target'
 		app = docker.build("0.2.6")
     }
     
-    //stage('Push') {
-    //	docker.withRegistry('https://registry.hub.docker.com', 'docker-hub') {            
-	//		app.push("0.2.6")            
-    //    }    
-    //}
+    stage('Push') {
+    	docker.withRegistry('https://registry.hub.docker.com', 'docker-hub') {            
+			app.push("0.2.6")            
+        }    
+    }
 }
