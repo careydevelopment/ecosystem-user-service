@@ -27,6 +27,6 @@ node {
     }
     
     stage('Cleanup') {
-		sh "docker rmi $(docker images | grep 'ecosystem-user-service')"
+		sh "docker rmi $$(docker images | grep 'ecosystem-user-service')"
     }
 }
