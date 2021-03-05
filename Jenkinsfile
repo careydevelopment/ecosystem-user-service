@@ -15,7 +15,9 @@ pipeline {
         	
             steps {
                 sh 'mvn -B -DskipTests clean package'
-                stash includes: '/var/lib/jenkins/workspace/ecosystem-user-service/target/ecosystem-user-service.jar', name: 'jar'
+                sh 'ls -la'
+                sh 'ls ./target'
+                stash includes: '**/target/ecosystem-user-service.jar', name: 'jar'
             }
         }
         //stage('Test') { 
