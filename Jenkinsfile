@@ -16,12 +16,13 @@ node {
      
     stage('Build Image') {
     	unstash 'jar'
-		app = docker.build("ecosystem-user-service:0.2.6")
+		app = docker.build 'brianmcarey/repo'
     }
     
     stage('Push') {
     	docker.withRegistry('https://registry.hub.docker.com', 'docker-hub') {            
-			app.push("brianmcarey/repo:latest")            
+			app.push("$BUILD_NUMBER")
+			app.push('latest')           
         }    
     }
 }
