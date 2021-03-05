@@ -6,11 +6,8 @@ RUN ls ./ecosystem-user-service/target
 
 
 FROM adoptopenjdk/openjdk11:jre-11.0.10_9-alpine
-WORKDIR /etc/careydevelopment
 
-COPY ./ecosystem.properties .
-COPY ./product.properties .
-COPY ./server.p12 .
+WORKDIR /etc/careydevelopment
 
 COPY --from=build ./ecosystem-user-service/target/ecosystem-user-service.jar .
 
