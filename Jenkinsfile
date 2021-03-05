@@ -2,7 +2,7 @@ node {
 	def app
 	def image = 'brianmcarey/ecosystem-user-service'
 	
-	stages {
+	try {
 		stage('Clone repository') {               
 	    	git branch: '0.2.6-devops-work',
 	        	credentialsId: 'GitHub Credentials',
@@ -31,11 +31,9 @@ node {
 			sh 'docker rmi ' + image + ':$BUILD_NUMBER'
 			sh 'docker rmi registry.hub.docker.com/' + image + ':$BUILD_NUMBER'
 	    }
+	} catch (Exception e) {
+		println 'error'
+	} finally {
+        junit '**/target/surefire-reports/TEST-*.xml'		
 	}
-	
-	post {
-      always {
-        junit '**/target/surefire-reports/TEST-*.xml'
-      }
-   } 
 }
