@@ -1,6 +1,6 @@
 node {
 	def app
-	def image = 'ecosystem-user-service'
+	def image = 'brianmcarey/ecosystem-user-service'
 	def tag = '0.2.6-SNAPSHOT'
 	
 	stage('Clone repository') {               
@@ -18,7 +18,7 @@ node {
      
     stage('Build Image') {
     	unstash 'jar'
-		app = docker.build 'brianmcarey/$image:$tag'
+		app = docker.build image + ':' + tag
     }
     
     stage('Push') {
