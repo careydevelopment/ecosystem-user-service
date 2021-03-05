@@ -33,6 +33,7 @@ node {
 	    }
 	} catch (Exception e) {
 		println 'Error occurred during build process!'
+		currentBuild.result = 'FAILURE'
 	} finally {
         junit '**/target/surefire-reports/TEST-*.xml'		
 	}
