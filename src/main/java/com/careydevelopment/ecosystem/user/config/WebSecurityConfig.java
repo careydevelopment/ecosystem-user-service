@@ -99,9 +99,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		httpSecurity
 		    .cors().and()
 		    .csrf().disable()
-		    .addFilter(bearerTokenAuthenticationFilter())
-		    .addFilter(credentialsAuthenticationFilter())
+	        .addFilter(bearerTokenAuthenticationFilter())
+		    .addFilter(credentialsAuthenticationFilter())       
 		    .authorizeRequests()
+            .antMatchers("**/helloworld").permitAll()
             .anyRequest().access("hasAuthority('CAREYDEVELOPMENT_CRM_USER')").and()
 		    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 	}	

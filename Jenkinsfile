@@ -4,8 +4,8 @@ node {
 	
 	stage('Clone repository') {               
     	git branch: '0.2.6-devops-work',
-        credentialsId: 'GitHub Credentials',
-        url: 'https://github.com/careydevelopment/ecosystem-user-service.git'
+        	credentialsId: 'GitHub Credentials',
+        	url: 'https://github.com/careydevelopment/ecosystem-user-service.git'
     } 
 
 	stage('Build JAR') {
@@ -25,7 +25,6 @@ node {
 			app.push()
         }    
     }
-    
     
     stage('Cleanup') {
 		sh 'docker rmi ' + image + ':$BUILD_NUMBER'

@@ -55,7 +55,12 @@
 		<dependency>
 		    <groupId>javax.xml.bind</groupId> 
 		    <artifactId>jaxb-api</artifactId>
-		</dependency>	  
+		</dependency>
+		<dependency>
+			<scope>test</scope>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+        </dependency>	  
     </dependencies>
   
     <properties>
