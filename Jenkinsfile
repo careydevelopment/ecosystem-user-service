@@ -16,7 +16,7 @@ node {
      
     stage('Build Image') {
     	unstash 'jar'
-		app = docker.build("0.2.6")
+		app = docker.build("ecosystem-user-service:0.2.6")
     }
     
     stage('Push') {
