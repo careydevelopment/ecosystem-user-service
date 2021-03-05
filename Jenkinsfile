@@ -21,7 +21,7 @@ node {
     
     stage('Push') {
     	docker.withRegistry('https://registry.hub.docker.com', 'docker-hub') {            
-			app.push("0.2.6")            
+			app.push("repo")            
         }    
     }
 }
