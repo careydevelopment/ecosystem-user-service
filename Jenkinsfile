@@ -27,6 +27,6 @@ node {
     }
     
     stage('Cleanup') {
-		sh 'docker rmi brianmcarey/$image:$BUILD_NUMBER'
+		sh 'docker rmi ' + image + ':$BUILD_NUMBER'
     }
 }
