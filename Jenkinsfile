@@ -1,5 +1,13 @@
 node {
 	def app
+	
+	//stage('Clone repository') {               
+    //	git branch: 'my_specific_branch',
+    //    credentialsId: 'my_cred_id',
+    //            url: 'ssh://git@test.com/proj/test_proj.git'
+	//
+    //        sh "ls -lat"  
+    //} 
 
 	stage('Build JAR') {
     	docker.image('maven:3.6.3-jdk-11').inside('-v /root/.m2:/root/.m2') {
