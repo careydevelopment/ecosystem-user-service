@@ -29,5 +29,6 @@ node {
     
     stage('Cleanup') {
 		sh 'docker rmi ' + image + ':$BUILD_NUMBER'
+		sh 'docker rmi registry.hub.docker.com/' + image + ':$BUILD_NUMBER'
     }
 }
