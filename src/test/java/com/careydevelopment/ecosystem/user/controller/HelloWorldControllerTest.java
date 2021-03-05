@@ -16,7 +16,7 @@ public class HelloWorldControllerTest {
     @Autowired
     private MockMvc mockMvc;
     
-    //@Test
+    @Test
     public void testHelloWorld() throws Exception {
         this.mockMvc
         .perform(MockMvcRequestBuilders.get("/helloworld"))
