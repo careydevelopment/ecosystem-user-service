@@ -20,8 +20,8 @@ node {
     }
     
     stage('Push') {
-    	docker.withRegistry('https://registry.hub.docker.com/brianmcarey/repo', 'docker-hub') {            
-			app.push("latest")            
+    	docker.withRegistry('https://registry.hub.docker.com', 'docker-hub') {            
+			app.push("brianmcarey/repo:latest")            
         }    
     }
 }
