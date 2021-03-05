@@ -15,9 +15,10 @@ node {
         	stash includes: '**/target/ecosystem-user-service.jar', name: 'jar'
     	}
     }
-    
+     
     stage('Build Image') {
     	unstash 'jar'
+    	ls -la
 		app = docker.build("0.2.6")
     }
     
