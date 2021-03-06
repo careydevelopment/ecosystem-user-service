@@ -1,7 +1,7 @@
 node {
 	def app
-	def image = 'careydevelopment/ecosystem-user-service'
-	def branch = '0.2.7-devops-work'
+	def image = 'careydevelopment.jfrog.io/docker/ecosystem-user-service'
+	def branch = '0.2.8-devops-jfrog'
 	
 	try {
 		stage('Clone repository') {               
@@ -23,14 +23,13 @@ node {
 	    }
 	    
 	    stage('Push') {
-	    	docker.withRegistry('https://registry.hub.docker.com', 'docker-hub') {            
+	    	docker.withRegistry('https://careydevelopment.jfrog.io', 'jfrog-artifactory') {            
 				app.push()
 	        }    
 	    }
 	    
 	    stage('Cleanup') {
 			sh 'docker rmi ' + image + ':$BUILD_NUMBER'
-			sh 'docker rmi registry.hub.docker.com/' + image + ':$BUILD_NUMBER'
 	    }
 	} catch (e) {
 		echo 'Error occurred during build process!'
