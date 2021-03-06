@@ -4,7 +4,7 @@ node {
 	
 	try {
 		stage('Clone repository') {               
-	    	git branch: "$BRANCH_NAME",
+	    	git branch: env.BRANCH_NAME,
 	        	credentialsId: 'GitHub Credentials',
 	        	url: 'https://github.com/careydevelopment/ecosystem-user-service.git'
 	    } 
