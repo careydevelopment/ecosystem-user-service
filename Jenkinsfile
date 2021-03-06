@@ -1,11 +1,10 @@
 node {
 	def app
 	def image = 'careydevelopment/ecosystem-user-service'
-	def version = '0.2.6-devops-work'
 	
 	try {
 		stage('Clone repository') {               
-	    	git branch: version,
+	    	git branch: "$GIT_BRANCH",
 	        	credentialsId: 'GitHub Credentials',
 	        	url: 'https://github.com/careydevelopment/ecosystem-user-service.git'
 	    } 
