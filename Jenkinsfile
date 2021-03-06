@@ -1,6 +1,6 @@
 node {
 	def app
-	def image = 'careydevelopment/ecosystem-user-service'
+	def image = 'registry.hub.docker.com/careydevelopment/ecosystem-user-service'
 	def branch = '0.2.7-devops-work'
 	
 	try {
@@ -29,7 +29,6 @@ node {
 	    }
 	    
 	    stage('Cleanup') {
-			sh 'docker rmi ' + image + ':$BUILD_NUMBER'
 			sh 'docker rmi registry.hub.docker.com/' + image + ':$BUILD_NUMBER'
 	    }
 	} catch (e) {
