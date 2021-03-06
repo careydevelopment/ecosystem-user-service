@@ -1,10 +1,11 @@
 node {
 	def app
 	def image = 'careydevelopment/ecosystem-user-service'
+	def branch = env.BRANCH_NAME
 	
 	try {
 		stage('Clone repository') {               
-	    	git branch: env.BRANCH_NAME,
+	    	git branch: branch,
 	        	credentialsId: 'GitHub Credentials',
 	        	url: 'https://github.com/careydevelopment/ecosystem-user-service.git'
 	    } 
