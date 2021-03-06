@@ -1,7 +1,7 @@
 node {
 	def app
 	def image = 'careydevelopment/ecosystem-user-service'
-	def branch = env.BRANCH_NAME
+	def branch = env.GIT_BRANCH
 	
 	try {
 		stage('Clone repository') {               
