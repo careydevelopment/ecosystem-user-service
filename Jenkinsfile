@@ -1,11 +1,11 @@
 node {
 	def app
 	def image = 'careydevelopment/ecosystem-user-service'
-	def version = '0.2.6-devops-work'
+	def branch = '0.2.7-devops-work'
 	
 	try {
 		stage('Clone repository') {               
-	    	git branch: version,
+	    	git branch: branch,
 	        	credentialsId: 'GitHub Credentials',
 	        	url: 'https://github.com/careydevelopment/ecosystem-user-service.git'
 	    } 
@@ -32,8 +32,9 @@ node {
 			sh 'docker rmi ' + image + ':$BUILD_NUMBER'
 			sh 'docker rmi registry.hub.docker.com/' + image + ':$BUILD_NUMBER'
 	    }
-	} catch (Exception e) {
-		println 'Error occurred during build process!'
+	} catch (e) {
+		echo 'Error occurred during build process!'
+		echo e.toString()
 		currentBuild.result = 'FAILURE'
 	} finally {
         junit '**/target/surefire-reports/TEST-*.xml'		
