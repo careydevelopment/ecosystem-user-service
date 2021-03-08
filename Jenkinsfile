@@ -25,6 +25,7 @@ node {
 	    stage('Push') {
 	    	docker.withRegistry('https://careydevelopment.jfrog.io', 'jfrog-artifactory') {            
 				app.push()
+				app.push('latest')
 	        }    
 	    }
 	    
