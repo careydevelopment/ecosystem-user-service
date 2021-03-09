@@ -1,9 +1,6 @@
 package com.careydevelopment.ecosystem.user.config;
 
-import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
-
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -102,7 +99,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	        .addFilter(bearerTokenAuthenticationFilter())
 		    .addFilter(credentialsAuthenticationFilter())       
 		    .authorizeRequests()
-            .antMatchers("**/helloworld").permitAll()
             .anyRequest().access("hasAuthority('CAREYDEVELOPMENT_CRM_USER')").and()
 		    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 	}	

@@ -110,7 +110,12 @@ public class UserController {
     
     @GetMapping("/me")
     public ResponseEntity<?> me() {
-        User user = securityUtil.getCurrentUser();
-        return ResponseEntity.ok(user);
+        try {
+            User user = securityUtil.getCurrentUser();
+            return ResponseEntity.ok(user);
+        } catch (Exception e) {
+            LOG.error("Problem retrieving current user!", e);
+             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 }
