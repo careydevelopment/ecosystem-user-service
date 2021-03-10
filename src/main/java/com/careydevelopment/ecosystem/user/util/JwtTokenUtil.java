@@ -104,4 +104,3 @@ public class JwtTokenUtil {
 		return (!isTokenExpired());
 	}
 }
- 
