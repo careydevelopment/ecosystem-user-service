@@ -1,11 +1,11 @@
 node {
 	def app
 	def image = 'careydevelopment/ecosystem-user-service'
-	def branch = scm.branches[0].name
+	def branch = '0.2.9-unit-tests'
 	
 	
 	try {
-		stage('Clone repository') {               
+		stage('Clone repository') {
 	    	git branch: branch,
 	        	credentialsId: 'GitHub Credentials',
 	        	url: 'https://github.com/careydevelopment/ecosystem-user-service.git'
