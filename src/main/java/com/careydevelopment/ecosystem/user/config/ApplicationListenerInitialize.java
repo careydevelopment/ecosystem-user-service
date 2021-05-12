@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import com.careydevelopment.ecosystem.user.repository.UserRepository;
 import com.careydevelopment.ecosystem.user.util.JwtTokenUtil;
 import com.careydevelopment.ecosystem.user.util.PropertiesUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 public class ApplicationListenerInitialize implements ApplicationListener<ApplicationReadyEvent>  {
@@ -25,6 +26,8 @@ public class ApplicationListenerInitialize implements ApplicationListener<Applic
     PasswordEncoder encoder;
 	
     public void onApplicationEvent(ApplicationReadyEvent event) {
+        ObjectMapper mapper = new ObjectMapper();
+        
         setCachedData();        
     }
     

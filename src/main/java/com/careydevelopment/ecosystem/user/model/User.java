@@ -73,6 +73,10 @@ public class User implements UserDetails {
 	@JsonIgnore
 	private String password;	
 	
+	@JsonIgnore
+	private GoogleApi googleApi;
+
+	private EmailIntegration emailIntegration;
 	
 	public String getCountry() {
 		return country;
@@ -170,8 +174,20 @@ public class User implements UserDetails {
 		this.authorityNames = authorityNames;
 	}
 	
-	
-	@Override
+	public GoogleApi getGoogleApi() {
+        return googleApi;
+    }
+    public void setGoogleApi(GoogleApi googleApi) {
+        this.googleApi = googleApi;
+    }
+    public EmailIntegration getEmailIntegration() {
+        return emailIntegration;
+    }
+    public void setEmailIntegration(EmailIntegration emailIntegration) {
+        this.emailIntegration = emailIntegration;
+    }
+    
+    @Override
 	@JsonIgnore
 	public boolean isAccountNonExpired() {
 		return true;
@@ -213,5 +229,32 @@ public class User implements UserDetails {
 	
 	public String toString() {
         return ReflectionToStringBuilder.toString(this);
+    }
+	
+	
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        return result;
+    }
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        User other = (User) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        return true;
     }
 }
