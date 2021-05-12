@@ -1,8 +1,7 @@
 node {
 	def app
 	def image = 'careydevelopment/ecosystem-user-service'
-	def branch = '0.2.9-unit-tests'
-	
+	def branch = scm.branches[0].name.substring(2)
 	
 	try {
 		stage('Clone repository') {
@@ -30,8 +29,8 @@ node {
 	    }
 	    
 	    stage('Cleanup') {
-			//sh 'docker rmi ' + image + ':$BUILD_NUMBER'
-			//sh 'docker rmi registry.hub.docker.com/' + image + ':$BUILD_NUMBER'
+			sh 'docker rmi ' + image + ':$BUILD_NUMBER'
+			sh 'docker rmi registry.hub.docker.com/' + image + ':$BUILD_NUMBER'
 	    }
 	} catch (e) {
 		echo 'Error occurred during build process!'
