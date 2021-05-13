@@ -39,7 +39,7 @@ public class ApplicationListenerInitialize implements ApplicationListener<Applic
         setCachedData();        
         
         
-        Path path = Paths.get("/home/briancarey37060/careydevelopment");
+        Path path = Paths.get("/etc/careydevelopment");
 
         if (Files.exists(path)) {
             LOG.info("It exists");
