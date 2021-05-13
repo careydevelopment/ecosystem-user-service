@@ -115,6 +115,7 @@ public class UserController {
     
     @GetMapping("/me")
     public ResponseEntity<?> me() {
+        LOG.info("In me");
         String dirLocation = "/home/briancarey37060/careydevelopment";
         
         try {
@@ -122,7 +123,9 @@ public class UserController {
                         .map(Path::toFile)
                         .collect(Collectors.toList());
              
-            files.forEach(System.out::println);
+            files.forEach(file -> {
+                LOG.info("File is " + file);
+            });
         } catch (IOException e) {
             e.printStackTrace();
         }
