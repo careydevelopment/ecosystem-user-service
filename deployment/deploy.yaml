@@ -17,6 +17,9 @@ spec:
       containers:
       - name: ecosystem-user-service
         image: registry.hub.docker.com/careydevelopment/ecosystem-user-service:35
+        volumeMounts:
+    	- name: properties-loc
+      	  mountPath: /etc/careydevelopment
         env:
         - name: ALLOW_EMPTY_PASSWORD
           value: "yes"
@@ -30,3 +33,7 @@ spec:
 +        ports:
         - containerPort: 32010
           name: redis
+      volumes:
+ 	  - name: properties-loc
+ 	    hostPath:
+          path: /etc/properties
