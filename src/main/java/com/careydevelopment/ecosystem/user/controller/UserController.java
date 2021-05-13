@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.validation.Valid;
 
@@ -122,10 +123,24 @@ public class UserController {
             List<File> files = Files.list(Paths.get(dirLocation))
                         .map(Path::toFile)
                         .collect(Collectors.toList());
+            LOG.info("Files is " + files);
              
             files.forEach(file -> {
                 LOG.info("File is " + file);
             });
+            
+            
+            try (Stream<Path> paths = Files.walk(Paths.get(dirLocation))) {
+                LOG.info("in the second one");
+                
+                paths
+                    .filter(Files::isRegularFile)
+                    .forEach(file -> {
+                        LOG.info("File here is" + file);
+                    });
+            } catch (Exception e) {
+                LOG.error("Noep", e);
+            }
         } catch (IOException e) {
             LOG.error("Got a problem", e);
         }
