@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import com.careydevelopment.ecosystem.user.repository.UserRepository;
 import com.careydevelopment.ecosystem.user.util.JwtTokenUtil;
-import com.careydevelopment.ecosystem.user.util.PropertiesUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
@@ -18,9 +17,8 @@ public class ApplicationListenerInitialize implements ApplicationListener<Applic
     @Autowired
     UserRepository userRepository;
 
-    
-    @Value("${ecosystem.properties.file.location}")
-    private String ecosystemPropertiesFile;
+    @Value("${jwt.secret}")
+    private String jwtSecret;
 
     @Autowired
     PasswordEncoder encoder;
@@ -38,8 +36,6 @@ public class ApplicationListenerInitialize implements ApplicationListener<Applic
 
     
     private void setJwtCachedData() {
-        PropertiesUtil propertiesUtil = new PropertiesUtil(ecosystemPropertiesFile);
-        String jwtSecret = propertiesUtil.getProperty("jwt.secret");
         JwtTokenUtil.SECRET = jwtSecret;
     }
 }

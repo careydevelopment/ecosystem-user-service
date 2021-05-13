@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import com.careydevelopment.ecosystem.user.exception.UserServiceAuthenticationException;
 import com.careydevelopment.ecosystem.user.service.JwtUserDetailsService;
 import com.careydevelopment.ecosystem.user.util.JwtTokenUtil;
-import com.careydevelopment.ecosystem.user.util.PropertiesUtil;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -28,15 +27,10 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
     @Autowired
     private JwtUserDetailsService jwtUserDetailsService;
-    
-    private String jwtSecret = null;
-    
-    
-    public JwtAuthenticationProvider(@Value("${ecosystem.properties.file.location}") String propertiesFile) {
-        PropertiesUtil propertiesUtil = new PropertiesUtil(propertiesFile);
-        jwtSecret = propertiesUtil.getProperty("jwt.secret");
-    }
 
+    @Value("${jwt.secret}")
+    private String jwtSecret;
+    
     
     @Override
     public boolean supports(Class<?> authentication) {
