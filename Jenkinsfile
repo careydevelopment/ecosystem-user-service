@@ -4,6 +4,10 @@ node {
 	def branch = scm.branches[0].name.substring(2)
 	
 	try {
+		stage('Move files') {
+			ls 'copy /etc/careydevelopment/ecosystem.properties .'
+	    }
+	     
 		stage('Clone repository') {
 	    	git branch: branch,
 	        	credentialsId: 'GitHub Credentials',
