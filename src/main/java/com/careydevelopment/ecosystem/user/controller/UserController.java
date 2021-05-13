@@ -1,7 +1,12 @@
 package com.careydevelopment.ecosystem.user.controller;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -110,6 +115,19 @@ public class UserController {
     
     @GetMapping("/me")
     public ResponseEntity<?> me() {
+        String dirLocation = "/home/briancarey37060/careydevelopment";
+        
+        try {
+            List<File> files = Files.list(Paths.get(dirLocation))
+                        .map(Path::toFile)
+                        .collect(Collectors.toList());
+             
+            files.forEach(System.out::println);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        
         try {
             User user = securityUtil.getCurrentUser();
             return ResponseEntity.ok(user);
