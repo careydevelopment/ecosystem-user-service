@@ -127,7 +127,7 @@ public class UserController {
                 LOG.info("File is " + file);
             });
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("Got a problem", e);
         }
         
         
