@@ -5,6 +5,7 @@ node {
 	
 	try {
 		stage('Move files') {
+			sh 'ls /etc/careydevelopment'
 			sh 'copy /etc/careydevelopment/ecosystem.properties .'
 	    }
 	     
