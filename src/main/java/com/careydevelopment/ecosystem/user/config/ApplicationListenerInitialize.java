@@ -1,8 +1,11 @@
 package com.careydevelopment.ecosystem.user.config;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +16,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import com.careydevelopment.ecosystem.user.controller.UserController;
 import com.careydevelopment.ecosystem.user.repository.UserRepository;
 import com.careydevelopment.ecosystem.user.util.JwtTokenUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,13 +40,27 @@ public class ApplicationListenerInitialize implements ApplicationListener<Applic
         
         setCachedData();        
         
-        
-        Path path = Paths.get("/etc/careydevelopment");
-
-        if (Files.exists(path)) {
-            LOG.info("It exists");
-        } else {
-            LOG.info("It doesn't exist");
+        try {
+            String text = "Text to save to file";
+            Files.write(Paths.get("/etc/careydevelopment/fileName.txt"), text.getBytes());
+            
+            Path path = Paths.get("/etc/careydevelopment");
+    
+            if (Files.exists(path)) {
+                LOG.info("It exists");
+            } else {
+                LOG.info("It doesn't exist");
+            }
+            
+            
+            List<File> files = Files.list(Paths.get("/etc/careydevelopment"))
+                    .map(Path::toFile)
+                    .collect(Collectors.toList());
+         
+            LOG.info("Files is " + files);
+            files.forEach(System.out::println);
+        } catch (Exception e) {
+            LOG.error("Error", e);
         }
     }
     
