@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ecosystem-user-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ecosystem-user-service
+  template:
+    metadata:
+      labels:
+        app: ecosystem-user-service
+    spec:
+      nodeSelector:
+        "beta.kubernetes.io/os": linux
+      containers:
+      - name: ecosystem-user-service
+        image: registry.hub.docker.com/careydevelopment/ecosystem-user-service:35
+        env:
+        - name: ALLOW_EMPTY_PASSWORD
+          value: "yes"
+        resources:
+          requests:
+            cpu: 500m
+            memory: 512Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
++        ports:
+        - containerPort: 32010
+          name: redis
