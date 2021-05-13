@@ -5,7 +5,7 @@ node {
 	
 	try {
 		stage('Move files') {
-			ls 'copy /etc/careydevelopment/ecosystem.properties .'
+			sh 'copy /etc/careydevelopment/ecosystem.properties .'
 	    }
 	     
 		stage('Clone repository') {
