@@ -17,8 +17,6 @@ public class JwtTokenUtil {
 
 	private static final long JWT_TOKEN_VALIDITY = 24 * 60 * 60 * 1000;
 	
-	private static final String AUDIENCE = "careydevelopment-ecosystem-users";
-	
 	public static String SECRET;
 	
 	private String token = null;
@@ -84,10 +82,9 @@ public class JwtTokenUtil {
 
 	
 	private static JwtTokenUtil doGenerateToken(Map<String, Object> claims, String subject) {
-		String token= Jwts.builder()
+		String token = Jwts.builder()
 				.setClaims(claims)
 				.setSubject(subject)
-				.setAudience(AUDIENCE)
 				.setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY))
 				.signWith(SignatureAlgorithm.HS512, SECRET).compact();
@@ -107,4 +104,3 @@ public class JwtTokenUtil {
 		return (!isTokenExpired());
 	}
 }
- 

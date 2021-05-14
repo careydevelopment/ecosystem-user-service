@@ -1,7 +1,13 @@
 package com.careydevelopment.ecosystem.user.controller;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.validation.Valid;
 
@@ -110,7 +116,12 @@ public class UserController {
     
     @GetMapping("/me")
     public ResponseEntity<?> me() {
-        User user = securityUtil.getCurrentUser();
-        return ResponseEntity.ok(user);
+        try {
+            User user = securityUtil.getCurrentUser();
+            return ResponseEntity.ok(user);
+        } catch (Exception e) {
+            LOG.error("Problem retrieving current user!", e);
+             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 }
