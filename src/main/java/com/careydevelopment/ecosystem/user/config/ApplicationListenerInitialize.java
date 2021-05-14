@@ -39,29 +39,6 @@ public class ApplicationListenerInitialize implements ApplicationListener<Applic
         ObjectMapper mapper = new ObjectMapper();
         
         setCachedData();        
-        
-        try {
-//            String text = "Text to save to file";
-//            Files.write(Paths.get("/etc/careydevelopment/fileName.txt"), text.getBytes());
-//            
-//            Path path = Paths.get("/etc/careydevelopment");
-//    
-//            if (Files.exists(path)) {
-//                LOG.info("It exists");
-//            } else {
-//                LOG.info("It doesn't exist");
-//            }
-            
-            
-            List<File> files = Files.list(Paths.get("/etc/careydevelopment"))
-                    .map(Path::toFile)
-                    .collect(Collectors.toList());
-         
-            LOG.info("Files is " + files);
-            files.forEach(System.out::println);
-        } catch (Exception e) {
-            LOG.error("Error", e);
-        }
     }
     
     
