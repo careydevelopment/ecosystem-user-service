@@ -70,6 +70,9 @@ public class User implements UserDetails {
 	@Size(max = 2, message = "Please enter a two-digit abbreviation for country")
 	private String country;
 	
+    @Size(max = 40, message = "Time zone cannot be more than 40 characters")
+    private String timezone;
+	
 	@JsonIgnore
 	private String password;	
 	
@@ -185,6 +188,12 @@ public class User implements UserDetails {
     }
     public void setEmailIntegration(EmailIntegration emailIntegration) {
         this.emailIntegration = emailIntegration;
+    }
+    public String getTimezone() {
+        return timezone;
+    }
+    public void setTimezone(String timezone) {
+        this.timezone = timezone;
     }
     
     @Override

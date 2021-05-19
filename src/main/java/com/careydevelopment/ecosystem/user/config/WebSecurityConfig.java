@@ -51,8 +51,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	//TODO: Harden security before going to production
 	@Bean
 	public CorsFilter corsFilter() {
-    	UrlBasedCorsConfigurationSource source = new 
-    	UrlBasedCorsConfigurationSource();
+    	UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     	CorsConfiguration config = new CorsConfiguration();
     	config.setAllowCredentials(true);
     	config.addAllowedOrigin("*");
