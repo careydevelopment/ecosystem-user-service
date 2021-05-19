@@ -19,19 +19,14 @@ node {
 	     
 	    stage('Build Image') {
 	    	unstash 'jar'
-			app = docker.build image + ':$BUILD_NUMBER'
+			app = docker.build image
 	    }
 	    
 	    stage('Push') {
 	    	docker.withRegistry('https://registry.hub.docker.com', 'docker-hub') {            
-				app.push()
+				app.push("${env.BUILD_NUMBER}")
+				app.push("latest")
 	        }    
-	    }
-	    
-	    stage('Cleanup') {
-	    	sh 'ls /etc/careydevelopment'
-			sh 'docker rmi ' + image + ':$BUILD_NUMBER'
-			sh 'docker rmi registry.hub.docker.com/' + image + ':$BUILD_NUMBER'
 	    }
 	} catch (e) {
 		echo 'Error occurred during build process!'
