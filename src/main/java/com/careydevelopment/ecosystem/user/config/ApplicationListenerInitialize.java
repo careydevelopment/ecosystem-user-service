@@ -17,7 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.careydevelopment.ecosystem.user.repository.UserRepository;
-import com.careydevelopment.ecosystem.user.util.JwtTokenUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component

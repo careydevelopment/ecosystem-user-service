@@ -27,11 +27,11 @@ public class UserFileUtil extends FileUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(FileUtil.class);
     
-    @Value("${user.files.base.path}")
-    protected String userFilesBasePath;
-
-    @Value("${max.file.upload.size}")
-    protected Long maxFileUploadSize;
+    
+    public UserFileUtil(@Value("${user.files.base.path}") String userFilesBasePath, @Value("${max.file.upload.size}") Long maxFileUploadSize) {
+        this.maxFileUploadSize = maxFileUploadSize;
+        this.userFilesBasePath = userFilesBasePath;
+    }
     
     
     public Path fetchProfilePhotoByUserId(String userId) throws ImageRetrievalException {
