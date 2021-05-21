@@ -7,18 +7,13 @@
     <parent>
         <groupId>us.careydevelopment.ecosystem</groupId>
         <artifactId>parent</artifactId>
-        <version>1.0.0-RELEASE</version>
+        <version>1.1.0-RELEASE</version>
     </parent>
     
     <dependencies>
         <dependency>
             <groupId>us.careydevelopment.ecosystem</groupId>
             <artifactId>file-util</artifactId>
-            <version>1.0.0-RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>us.careydevelopment.ecosystem</groupId>
-            <artifactId>jwt-security</artifactId>
             <version>1.0.0-RELEASE</version>
         </dependency>
     </dependencies>
