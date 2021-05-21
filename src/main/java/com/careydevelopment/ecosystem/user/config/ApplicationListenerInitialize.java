@@ -29,25 +29,9 @@ public class ApplicationListenerInitialize implements ApplicationListener<Applic
     @Autowired
     UserRepository userRepository;
 
-    @Value("${jwt.secret}")
-    private String jwtSecret;
-
     @Autowired
     PasswordEncoder encoder;
 	
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        ObjectMapper mapper = new ObjectMapper();
-        
-        setCachedData();        
-    }
-    
-    
-    private void setCachedData() {
-        setJwtCachedData();
-    }
-
-    
-    private void setJwtCachedData() {
-        JwtTokenUtil.SECRET = jwtSecret;
     }
 }

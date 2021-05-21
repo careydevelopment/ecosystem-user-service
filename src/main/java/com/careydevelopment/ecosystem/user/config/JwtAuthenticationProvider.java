@@ -3,7 +3,6 @@ package com.careydevelopment.ecosystem.user.config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,7 +16,6 @@ import com.careydevelopment.ecosystem.user.service.JwtUserDetailsService;
 import com.careydevelopment.ecosystem.user.util.JwtTokenUtil;
 
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureException;
 
 @Component
@@ -27,10 +25,10 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
     @Autowired
     private JwtUserDetailsService jwtUserDetailsService;
-
-    @Value("${jwt.secret}")
-    private String jwtSecret;
     
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+
     
     @Override
     public boolean supports(Class<?> authentication) {
@@ -44,11 +42,12 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         Authentication auth = null;
         
         try {
-            //validate the token
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(bearerToken.getToken());
+            String token = bearerToken.getToken();
             
-            JwtTokenUtil jwtTokenUtil = new JwtTokenUtil(bearerToken.getToken());
-            String username = jwtTokenUtil.getUsernameFromToken();
+            //validate the token
+            jwtTokenUtil.validateTokenWithSignature(token);
+            
+            String username = jwtTokenUtil.getUsernameFromToken(token);
             
             UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(username);
 

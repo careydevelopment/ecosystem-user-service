@@ -22,12 +22,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.careydevelopment.ecosystem.user.exception.FileTooLargeException;
-import com.careydevelopment.ecosystem.user.exception.MissingFileException;
 import com.careydevelopment.ecosystem.user.model.User;
 import com.careydevelopment.ecosystem.user.service.UserService;
-import com.careydevelopment.ecosystem.user.util.FileUtil;
 import com.careydevelopment.ecosystem.user.util.SecurityUtil;
+import com.careydevelopment.ecosystem.user.util.UserFileUtil;
+
+import us.careydevelopment.ecosystem.file.exception.FileTooLargeException;
+import us.careydevelopment.ecosystem.file.exception.MissingFileException;
 
 @RestController
 @RequestMapping("/user")
@@ -40,7 +41,7 @@ public class UserController {
     private UserService userService;
     
     @Autowired
-    private FileUtil fileUtil;
+    private UserFileUtil fileUtil;
     
     @Autowired
     private SecurityUtil securityUtil;

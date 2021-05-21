@@ -13,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.stereotype.Component;
 
 import com.careydevelopment.ecosystem.user.exception.UserServiceAuthenticationException;
 import com.careydevelopment.ecosystem.user.model.JwtRequest;
@@ -28,9 +29,12 @@ public class CredentialsAuthenticationFilter extends UsernamePasswordAuthenticat
 
     private AuthenticationManager authenticationManager;
     
+    private JwtTokenUtil jwtTokenUtil;
     
-    public CredentialsAuthenticationFilter(AuthenticationManager man) {
+    public CredentialsAuthenticationFilter(AuthenticationManager man, JwtTokenUtil jwtTokenUtil) {
         this.authenticationManager = man;
+        this.jwtTokenUtil = jwtTokenUtil;
+        
         this.setFilterProcessesUrl("/authenticate");
     }
     
@@ -60,9 +64,8 @@ public class CredentialsAuthenticationFilter extends UsernamePasswordAuthenticat
             FilterChain chain, Authentication auth) throws IOException {
         
         final User user = (User)auth.getPrincipal();
-        final JwtTokenUtil jwtTokenUtil = JwtTokenUtil.generateToken(user);
-        final String token = jwtTokenUtil.getToken();
-        Long expirationDate = jwtTokenUtil.getExpirationDateFromToken().getTime();
+        final String token = jwtTokenUtil.generateToken(user);
+        Long expirationDate = jwtTokenUtil.getExpirationDateFromToken(token).getTime();
 
         JwtResponse jwtResponse = new JwtResponse(token, user, expirationDate);
         

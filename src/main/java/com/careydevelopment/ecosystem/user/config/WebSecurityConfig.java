@@ -21,6 +21,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import com.careydevelopment.ecosystem.user.util.JwtTokenUtil;
 import com.careydevelopment.ecosystem.user.util.ResponseWriterUtil;
 
 
@@ -34,6 +35,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private JwtAuthenticationProvider jwtAuthenticationProvider;
 
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+    
 	
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
@@ -72,7 +76,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	
 	private CredentialsAuthenticationFilter credentialsAuthenticationFilter() throws Exception {
-	    CredentialsAuthenticationFilter filter = new CredentialsAuthenticationFilter(authenticationManager());
+	    CredentialsAuthenticationFilter filter = new CredentialsAuthenticationFilter(authenticationManager(), jwtTokenUtil);
 	    filter.setAuthenticationFailureHandler(authenticationFailureHandler());
 
 	    return filter;
