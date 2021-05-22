@@ -17,7 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.careydevelopment.ecosystem.user.repository.UserRepository;
-import com.careydevelopment.ecosystem.user.util.JwtTokenUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
@@ -29,25 +28,9 @@ public class ApplicationListenerInitialize implements ApplicationListener<Applic
     @Autowired
     UserRepository userRepository;
 
-    @Value("${jwt.secret}")
-    private String jwtSecret;
-
     @Autowired
     PasswordEncoder encoder;
 	
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        ObjectMapper mapper = new ObjectMapper();
-        
-        setCachedData();        
-    }
-    
-    
-    private void setCachedData() {
-        setJwtCachedData();
-    }
-
-    
-    private void setJwtCachedData() {
-        JwtTokenUtil.SECRET = jwtSecret;
     }
 }

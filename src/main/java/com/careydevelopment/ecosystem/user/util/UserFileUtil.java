@@ -2,7 +2,6 @@ package com.careydevelopment.ecosystem.user.util;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,24 +14,24 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.careydevelopment.ecosystem.user.exception.CopyFileException;
-import com.careydevelopment.ecosystem.user.exception.FileTooLargeException;
-import com.careydevelopment.ecosystem.user.exception.ImageRetrievalException;
-import com.careydevelopment.ecosystem.user.exception.MissingFileException;
 import com.careydevelopment.ecosystem.user.model.User;
 
+import us.careydevelopment.ecosystem.file.FileUtil;
+import us.careydevelopment.ecosystem.file.exception.CopyFileException;
+import us.careydevelopment.ecosystem.file.exception.FileTooLargeException;
+import us.careydevelopment.ecosystem.file.exception.ImageRetrievalException;
+import us.careydevelopment.ecosystem.file.exception.MissingFileException;
+
 @Component
-public class FileUtil {
+public class UserFileUtil extends FileUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(FileUtil.class);
     
-    private static final String PROFILE_DIR = "profile";
     
-    @Value("${user.files.base.path}")
-    private String userFilesBasePath;
-
-    @Value("${max.file.upload.size}")
-    private Long maxFileUploadSize;
+    public UserFileUtil(@Value("${user.files.base.path}") String userFilesBasePath, @Value("${max.file.upload.size}") Long maxFileUploadSize) {
+        this.maxFileUploadSize = maxFileUploadSize;
+        this.userFilesBasePath = userFilesBasePath;
+    }
     
     
     public Path fetchProfilePhotoByUserId(String userId) throws ImageRetrievalException {
@@ -58,17 +57,6 @@ public class FileUtil {
     }
     
     
-    private void deleteAllFilesInDirectory(Path rootLocation) {
-        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(rootLocation)) {
-            directoryStream.forEach(path -> {
-                path.toFile().delete();
-            });
-        } catch (IOException ie) {
-            LOG.error("Problem trying to delete files in " + rootLocation.toString());
-        }
-    }
-    
-    
     public void saveProfilePhoto(MultipartFile file, User user) throws MissingFileException, FileTooLargeException, CopyFileException {
         validateFile(file, maxFileUploadSize);
         Path rootLocation = Paths.get(getRootLocationForUserProfileImageUpload(user));
@@ -86,84 +74,24 @@ public class FileUtil {
             throw new CopyFileException("Failed to upload!");
         }
     }
-    
-    
-    private void validateFile(MultipartFile file, Long maxFileUploadSize) throws MissingFileException, FileTooLargeException {
-        checkFileExistence(file);
-        checkFileSize(file, maxFileUploadSize);
-    }
-    
+
     
     private String getNewFileName(MultipartFile file, User user) {
         LOG.debug("File name is " + file.getOriginalFilename());
                 
-        String newFileName = FileNameUtil.createFileName(user, file.getOriginalFilename());
+        String newFileName = UserFileNameUtil.createFileName(user, file.getOriginalFilename());
         LOG.debug("New file name is " + newFileName);
         
         return newFileName;
     }
     
-       
-    public void checkFileSize(MultipartFile file, Long maxFileUploadSize) throws FileTooLargeException {
-        if (file.getSize() > maxFileUploadSize) {
-            String message = "File is too large - max size is " + maxFileUploadSize;
-            throw new FileTooLargeException(message);
-        }
-    }
-
     
-    public void checkFileExistence(MultipartFile file) throws MissingFileException {
-        if (file == null) throw new MissingFileException("No file sent!");
-        if (StringUtils.isEmpty(file.getName())) throw new MissingFileException("No file sent!");
-    }
-    
-    
-    private void createDirectoryIfItDoesntExist(String dir) {
-        final Path path = Paths.get(dir);
-        
-        if (Files.notExists(path)) {
-            try {
-                Files.createDirectories(path);
-            } catch (IOException ie) {
-                LOG.error("Problem creating directory " + dir);
-            }
-        } 
-    }
-    
-    
-    public String properSeparators(String filePath) {
-        if (filePath != null) {
-            String properPath = filePath.replaceAll("\\\\", "/");
-            return properPath;
-        } else {
-            return null;
-        }
-    }
-
-    
-    public String getRootLocationForUserUpload(String userId) {
-        if (StringUtils.isEmpty(userId)) throw new IllegalArgumentException("No user id!");
-        
-        StringBuilder builder = new StringBuilder();
-        
-        builder.append(userFilesBasePath);
-        builder.append("/");
-        builder.append(userId);
-        
-        String location = builder.toString();
-        
-        createDirectoryIfItDoesntExist(location);
-        
-        return location;
-    }
-    
-        
     public String getRootLocationForUserUpload(User user) {
         if (user == null) throw new IllegalArgumentException("No user provided!");
         return this.getRootLocationForUserUpload(user.getId());
     }
     
-
+    
     public String getRootLocationForUserProfileImageUpload(String userId) {
         if (StringUtils.isEmpty(userId)) throw new IllegalArgumentException("No user id!");
 
