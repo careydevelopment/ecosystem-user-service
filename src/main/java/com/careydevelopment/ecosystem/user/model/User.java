@@ -1,6 +1,5 @@
 package com.careydevelopment.ecosystem.user.model;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -233,9 +232,9 @@ public class User extends BaseUser implements UserDetails {
             return false;
         User other = (User) obj;
         if (id == null) {
-            if (other.id != null)
+            if (other.getId() != null)
                 return false;
-            } else if (!id.equals(other.id))
+            } else if (!id.equals(other.getId()))
                 return false;
             
         return true;
