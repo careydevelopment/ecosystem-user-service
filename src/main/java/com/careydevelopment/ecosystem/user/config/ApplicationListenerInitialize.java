@@ -32,9 +32,5 @@ public class ApplicationListenerInitialize implements ApplicationListener<Applic
     IpLogService ipLogService;
     
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        //User user = userRepository.findByUsername("milton");
-        //user.setFailedLoginAttempts(null);
-        
-        //userRepository.save(user);
     }
 }
