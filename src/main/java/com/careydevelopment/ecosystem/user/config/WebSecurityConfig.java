@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 import com.careydevelopment.ecosystem.user.service.IpLogService;
-import com.careydevelopment.ecosystem.user.service.JwtService;
+import com.careydevelopment.ecosystem.user.service.UserService;
 import com.careydevelopment.ecosystem.user.util.JwtUtil;
 
 import us.careydevelopment.ecosystem.jwt.config.CredentialsAndJwtSecurityConfig;
@@ -16,7 +16,7 @@ import us.careydevelopment.ecosystem.jwt.config.CredentialsAndJwtSecurityConfig;
 @EnableWebSecurity
 public class WebSecurityConfig extends CredentialsAndJwtSecurityConfig {
 
-    public WebSecurityConfig(@Autowired JwtService jwtUserDetailsService, 
+    public WebSecurityConfig(@Autowired UserService jwtUserDetailsService, 
             @Autowired JwtAuthenticationProvider jwtAuthenticationProvider, @Autowired JwtUtil jwtUtil,
             @Autowired IpLogService ipLogService) {
         
