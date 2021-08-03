@@ -2,6 +2,7 @@ package com.careydevelopment.ecosystem.user.controller;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import javax.validation.Valid;
 
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.careydevelopment.ecosystem.user.model.User;
+import com.careydevelopment.ecosystem.user.model.UserSearchCriteria;
 import com.careydevelopment.ecosystem.user.service.UserService;
 import com.careydevelopment.ecosystem.user.util.SecurityUtil;
 import com.careydevelopment.ecosystem.user.util.UserFileUtil;
@@ -117,4 +119,20 @@ public class UserController {
              return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+    
+    
+    @GetMapping("/simpleSearch")
+    public ResponseEntity<?> search(@RequestParam(required = false) String emailAddress, @RequestParam(required = false) String username) {
+        UserSearchCriteria searchCriteria = new UserSearchCriteria();
+        searchCriteria.setEmailAddress(emailAddress);
+        searchCriteria.setUsername(username);
+        
+        LOG.debug("Search criteria is " + searchCriteria);
+        
+        List<User> users = userService.search(searchCriteria);
+        LOG.debug("Returning users " + users);
+        
+        return ResponseEntity.ok(users);                
+    }
+
 }
