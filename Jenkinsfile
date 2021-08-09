@@ -31,19 +31,19 @@ node {
 			app = docker.build image
 	    }
 	    
-	    stage('Push') {
-	    	docker.withRegistry('https://registry.hub.docker.com', 'docker-hub') {            
-				app.push("${env.BUILD_NUMBER}")
-				app.push("latest")
-	        }    
-	    }
+	    //stage('Push') {
+	    //	docker.withRegistry('https://registry.hub.docker.com', 'docker-hub') {            
+		//		app.push("${env.BUILD_NUMBER}")
+		//		app.push("latest")
+	    //    }    
+	    //}
 	    
 	    stage('Docker Build') {
             sh 'docker build --tag ecosystem-user-service:latest .'
         }
       
         stage ('Docker Run') {
-            sh 'docker run -d -t -p 32010:32010 -v /etc/careydevelopment:/etc/careydevelopment --name ecosystem-user-service careydevelopment/ecosystem-user-service:latest'
+            sh 'docker run -d -t -p 32010:32010 -v /etc/careydevelopment:/etc/careydevelopment --name ecosystem-user-service ecosystem-user-service:latest'
         }
 	} catch (e) {
 		echo 'Error occurred during build process!'

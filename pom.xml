@@ -7,7 +7,7 @@
     <parent>
         <groupId>us.careydevelopment.ecosystem</groupId>
         <artifactId>parent</artifactId>
-        <version>1.7.0-RELEASE</version>
+        <version>1.8.0-RELEASE</version>
     </parent>
 
     <dependencies>
@@ -16,5 +16,19 @@
             <artifactId>file-util</artifactId>
             <version>1.0.0-RELEASE</version>
         </dependency>
+        <dependency>
+		    <groupId>commons-validator</groupId>
+		    <artifactId>commons-validator</artifactId>
+		    <version>1.7</version>
+		</dependency>
+		<dependency>
+            <groupId>us.careydevelopment.util</groupId>
+            <artifactId>api-util</artifactId>
+            <version>1.4.0-RELEASE</version>
+        </dependency>
+		<dependency>
+		    <groupId>org.hibernate.validator</groupId>
+		    <artifactId>hibernate-validator</artifactId>
+		</dependency>
     </dependencies>
 </project>

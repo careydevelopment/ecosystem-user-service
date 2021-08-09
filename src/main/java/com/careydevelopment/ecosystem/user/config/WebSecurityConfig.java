@@ -16,6 +16,13 @@ import us.careydevelopment.ecosystem.jwt.config.CredentialsAndJwtSecurityConfig;
 @EnableWebSecurity
 public class WebSecurityConfig extends CredentialsAndJwtSecurityConfig {
 
+    @Override
+    protected String[] permitAllUrls() {
+        String[] permitAll = { "/registrant", "/simpleSearch" };
+        return permitAll;
+    }
+    
+    
     public WebSecurityConfig(@Autowired UserService jwtUserDetailsService, 
             @Autowired JwtAuthenticationProvider jwtAuthenticationProvider, @Autowired JwtUtil jwtUtil,
             @Autowired IpLogService ipLogService) {

@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,7 +32,6 @@ import us.careydevelopment.ecosystem.file.exception.FileTooLargeException;
 import us.careydevelopment.ecosystem.file.exception.MissingFileException;
 
 @RestController
-@RequestMapping("/user")
 public class UserController {
     
     private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
@@ -134,5 +132,4 @@ public class UserController {
         
         return ResponseEntity.ok(users);                
     }
-
 }

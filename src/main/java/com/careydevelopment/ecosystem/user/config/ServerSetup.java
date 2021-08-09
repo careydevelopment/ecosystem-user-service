@@ -1,5 +1,9 @@
 package com.careydevelopment.ecosystem.user.config;
 
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+
 import org.apache.catalina.connector.Connector;
 import org.apache.coyote.ajp.AbstractAjpProtocol;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +19,16 @@ public class ServerSetup {
  
     @Value("${ajp.enabled}")
     boolean ajpEnabled;
+    
+    
+    @Bean
+    public Validator validator() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        
+        return validator;
+    }
+    
     
     @Bean
     public TomcatServletWebServerFactory servletContainer() {
