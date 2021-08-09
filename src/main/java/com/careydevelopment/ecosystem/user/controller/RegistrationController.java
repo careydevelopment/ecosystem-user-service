@@ -8,12 +8,14 @@ import javax.validation.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.careydevelopment.ecosystem.user.model.Registrant;
+import com.careydevelopment.ecosystem.user.model.User;
 import com.careydevelopment.ecosystem.user.service.RegistrantService;
 
 import us.careydevelopment.util.api.model.ValidationErrorResponse;
@@ -42,6 +44,7 @@ public class RegistrationController {
         
         ValidationErrorResponse validationErrorResponse = ValidationUtil.convertConstraintViolationsToValidationErroResponse(violations);
         
+        //add in any validations not caught by JSR 380
         ValidationErrorResponse response = registrantService.validateRegistrant(registrant, validationErrorResponse);
         LOG.debug("validation is " + response);
         
@@ -49,8 +52,11 @@ public class RegistrationController {
             return ResponseEntityUtil.createResponseEntity(response);
         }
         
-        System.err.println("I'll persist");
+        User savedUser = registrantService.saveUser(registrant);
+        if (savedUser == null) {
+            return ResponseEntityUtil.createResponseEntityWithError("Registrant not saved. Please contact support.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(savedUser);
     }
 }

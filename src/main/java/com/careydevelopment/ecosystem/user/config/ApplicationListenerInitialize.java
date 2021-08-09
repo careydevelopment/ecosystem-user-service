@@ -18,7 +18,7 @@ import com.careydevelopment.ecosystem.user.service.UserService;
 @Component
 public class ApplicationListenerInitialize implements ApplicationListener<ApplicationReadyEvent>  {
 	
-    private static final Logger LOG = LoggerFactory.getLogger(ApplicationListenerInitialize.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ApplicationListenerInitialize.class); 
 
     
     @Autowired
@@ -34,8 +34,10 @@ public class ApplicationListenerInitialize implements ApplicationListener<Applic
     public void onApplicationEvent(ApplicationReadyEvent event) {
 
 //        UserSearchCriteria criteria = new UserSearchCriteria();
-//        criteria.setUsername("milton");
+//        criteria.setUsername("brianmcarey");
 //        List<User> users = userService.search(criteria);
 //        System.err.println(users);
+//        
+//        if (users.size() > 0) userRepository.delete(users.get(0));
     }
 }

@@ -24,7 +24,7 @@
 		<dependency>
             <groupId>us.careydevelopment.util</groupId>
             <artifactId>api-util</artifactId>
-            <version>1.4.0-RELEASE</version>
+            <version>1.4.2-RELEASE</version>
         </dependency>
 		<dependency>
 		    <groupId>org.hibernate.validator</groupId>

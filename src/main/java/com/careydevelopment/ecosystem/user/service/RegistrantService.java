@@ -34,9 +34,11 @@ public class RegistrantService {
     private PasswordEncoder encoder;
     
     
-    public void saveUser(Registrant registrant) {
+    public User saveUser(Registrant registrant) {
         User user = convertRegistrantToUser(registrant);
-        userRepository.save(user);
+        
+        User savedUser = userRepository.save(user);
+        return savedUser;
     }
     
     
