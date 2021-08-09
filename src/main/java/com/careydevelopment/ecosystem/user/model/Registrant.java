@@ -6,6 +6,8 @@ import javax.validation.constraints.Size;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Registrant {
 
     @NotNull
@@ -30,6 +32,9 @@ public class Registrant {
 
     @NotNull
     private String phone;
+
+    @JsonProperty("g-recaptcha-response")
+    private String recaptchaResponse;
     
     
     public String getFirstName() {
@@ -78,6 +83,14 @@ public class Registrant {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+    
+    public String getRecaptchaResponse() {
+        return recaptchaResponse;
+    }
+
+    public void setRecaptchaResponse(String recaptchaResponse) {
+        this.recaptchaResponse = recaptchaResponse;
     }
 
     public String toString() {
