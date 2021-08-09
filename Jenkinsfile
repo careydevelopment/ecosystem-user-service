@@ -15,8 +15,9 @@ node {
 	        	url: 'https://github.com/careydevelopment/ecosystem-user-service.git'
 	    } 
 	
-	    stage('Copy properties file') {
-	       sh 'cp ../config/ecosystem-user-service/application.properties ./src/main/resources'   
+	    stage('Copy properties files') {
+	       sh 'cp ../config/ecosystem-user-service/application.properties ./src/main/resources'
+	       sh 'cp ../config/ecosystem-user-service/carey-development-service-config.json .'   
         } 
 	
 		stage('Build JAR') {
@@ -42,9 +43,9 @@ node {
             sh 'docker build --tag ecosystem-user-service:latest .'
         }
       
-        stage ('Docker Run') {
-            sh 'docker run -d -t -p 32010:32010 -v /etc/careydevelopment:/etc/careydevelopment --name ecosystem-user-service ecosystem-user-service:latest'
-        }
+        //stage ('Docker Run') {
+        //    sh 'docker run -d -t -p 32010:32010 -v /etc/careydevelopment:/etc/careydevelopment --name ecosystem-user-service ecosystem-user-service:latest'
+        //}
 	} catch (e) {
 		echo 'Error occurred during build process!'
 		echo e.toString()
