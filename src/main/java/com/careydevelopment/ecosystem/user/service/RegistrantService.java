@@ -25,6 +25,7 @@ public class RegistrantService {
 
     private static final Logger LOG = LoggerFactory.getLogger(RegistrantService.class);
 
+    private static final float RECAPTCHA_MIN_SCORE = 0.8f;
     
     @Autowired
     private UserService userService;
@@ -72,7 +73,12 @@ public class RegistrantService {
     
     private void validateRecaptcha(ValidationErrorResponse errorResponse, Registrant registrant) {
         try {
-            recaptchaUtil.createAssessment(registrant.getRecaptchaResponse());
+            float score = recaptchaUtil.createAssessment(registrant.getRecaptchaResponse());
+            
+            if (score < RECAPTCHA_MIN_SCORE) {
+                //user-friendly error message not necessary if a bot is trying to get in
+                addError(errorResponse, "Google thinks you're a bot", null, null);
+            }
         } catch (IOException e) {
             LOG.error("Problem validating recaptcha!", e);
         }

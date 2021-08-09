@@ -29,54 +29,57 @@ public class RecaptchaUtil {
     private String siteKey;
     
     
-    public void createAssessment(String token) throws IOException {
-          // Initialize a client that will be used to send requests. This client needs to be created only
-          // once, and can be reused for multiple requests. After completing all of your requests, call
-          // the `client.close()` method on the client to safely
-          // clean up any remaining background resources.
-          try (RecaptchaEnterpriseServiceClient client = RecaptchaEnterpriseServiceClient.create()) {
-
+    public float createAssessment(String token) throws IOException {
+        float recaptchaScore = 0f;
+        
+        // Initialize a client that will be used to send requests. This client needs to be created only
+        // once, and can be reused for multiple requests. After completing all of your requests, call
+        // the `client.close()` method on the client to safely
+        // clean up any remaining background resources.
+        try (RecaptchaEnterpriseServiceClient client = RecaptchaEnterpriseServiceClient.create()) {
             // Specify a name for this assessment.
             String assessmentName = "assessment-name";
 
             // Set the properties of the event to be tracked.
             Event event = Event.newBuilder()
-                .setSiteKey(siteKey)
-                .setToken(token)
-                .build();
+                                  .setSiteKey(siteKey)
+                                  .setToken(token)
+                                  .build();
 
             // Build the assessment request.
             CreateAssessmentRequest createAssessmentRequest = CreateAssessmentRequest.newBuilder()
-                .setParent(ProjectName.of(projectID).toString())
-                .setAssessment(Assessment.newBuilder().setEvent(event).setName(assessmentName).build())
-                .build();
+                                                                .setParent(ProjectName.of(projectID).toString())
+                                                                .setAssessment(Assessment.newBuilder().setEvent(event).setName(assessmentName).build())
+                                                                .build();
 
             Assessment response = client.createAssessment(createAssessmentRequest);
 
             // Check if the token is valid.
             if (!response.getTokenProperties().getValid()) {
-              LOG.debug("The CreateAssessment call failed because the token was: " +
-                 response.getTokenProperties().getInvalidReason().name());
-              return;
+                LOG.error("The CreateAssessment call failed because the token was: " +
+                          response.getTokenProperties().getInvalidReason().name());
+                return recaptchaScore;
             }
 
             // Check if the expected action was executed.
             if (!response.getTokenProperties().getAction().equals(ACTION)) {
-              LOG.debug("The action attribute in your reCAPTCHA tag " +
-                  "does not match the action you are expecting to score");
-              return;
+                LOG.error("The action attribute in your reCAPTCHA tag " +
+                          "does not match the action you are expecting to score");
+                return recaptchaScore;
             }
 
             // Get the risk score and the reason(s).
             // For more information on interpreting the assessment,
             // see: https://cloud.google.com/recaptcha-enterprise/docs/interpret-assessment
-            float recaptchaScore = response.getRiskAnalysis().getScore();
+            recaptchaScore = response.getRiskAnalysis().getScore();
             LOG.debug("The reCAPTCHA score is: " + recaptchaScore);
 
             for (ClassificationReason reason : response.getRiskAnalysis().getReasonsList()) {
-              LOG.debug("Reason is " + reason);
+                LOG.debug("Reason is " + reason);
             }
-          }
         }
+        
+        return recaptchaScore;
+    }
     
 }

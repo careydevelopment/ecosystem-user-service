@@ -43,9 +43,9 @@ node {
             sh 'docker build --tag ecosystem-user-service:latest .'
         }
       
-        //stage ('Docker Run') {
-        //    sh 'docker run -d -t -p 32010:32010 -v /etc/careydevelopment:/etc/careydevelopment --name ecosystem-user-service ecosystem-user-service:latest'
-        //}
+        stage ('Docker Run') {
+            sh 'docker run -d -t -p 32010:32010 -v /etc/careydevelopment:/etc/careydevelopment --name ecosystem-user-service ecosystem-user-service:latest'
+        }
 	} catch (e) {
 		echo 'Error occurred during build process!'
 		echo e.toString()
