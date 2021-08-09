@@ -1,5 +1,6 @@
 package com.careydevelopment.ecosystem.user.service;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -13,6 +14,7 @@ import com.careydevelopment.ecosystem.user.model.Registrant;
 import com.careydevelopment.ecosystem.user.model.User;
 import com.careydevelopment.ecosystem.user.model.UserSearchCriteria;
 import com.careydevelopment.ecosystem.user.repository.UserRepository;
+import com.careydevelopment.ecosystem.user.util.RecaptchaUtil;
 
 import us.careydevelopment.util.api.model.ValidationError;
 import us.careydevelopment.util.api.model.ValidationErrorResponse;
@@ -32,6 +34,10 @@ public class RegistrantService {
 
     @Autowired
     private PasswordEncoder encoder;
+    
+    
+    @Autowired
+    private RecaptchaUtil recaptchaUtil;
     
     
     public User saveUser(Registrant registrant) {
@@ -58,9 +64,19 @@ public class RegistrantService {
     public ValidationErrorResponse validateRegistrant(Registrant registrant, ValidationErrorResponse errorResponse) {
         validateUniqueName(errorResponse, registrant);
         validateUniqueEmail(errorResponse, registrant);
+        validateRecaptcha(errorResponse, registrant);
         
         return errorResponse;
     }    
+    
+    
+    private void validateRecaptcha(ValidationErrorResponse errorResponse, Registrant registrant) {
+        try {
+            recaptchaUtil.createAssessment(registrant.getRecaptchaResponse());
+        } catch (IOException e) {
+            LOG.error("Problem validating recaptcha!", e);
+        }
+    }
     
     
     private void validateUniqueName(ValidationErrorResponse errorResponse, Registrant registrant) {
