@@ -14,4 +14,8 @@ public interface RegistrantAuthenticationRepository extends MongoRepository<Regi
 
     @Query("{ 'username': '?0', 'time' : { $gte: ?1 }, 'type': '?2', 'code': '?3' }") 
     public List<RegistrantAuthentication> codeCheck(String username, long sinceTime, String type, String code); 
+    
+    public List<RegistrantAuthentication> findByUsernameOrderByTimeDesc(String username);
+    
+    public List<RegistrantAuthentication> findByUsernameAndTypeOrderByTimeDesc(String username, String type);
 }

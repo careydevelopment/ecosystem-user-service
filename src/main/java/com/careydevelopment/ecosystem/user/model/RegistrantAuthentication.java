@@ -11,7 +11,12 @@ public class RegistrantAuthentication {
     private String username;
     private Long time;
     private Type type;
+    
+    //used for email
     private String code;
+    
+    //used for SMS
+    private String requestId;
     
     public String getUsername() {
         return username;
@@ -37,6 +42,12 @@ public class RegistrantAuthentication {
     }
     public void setCode(String code) {
         this.code = code;
+    }
+    public String getRequestId() {
+        return requestId;
+    }
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
     }
     public String toString() {
         return ReflectionToStringBuilder.toString(this);

@@ -1,5 +1,6 @@
 package com.careydevelopment.ecosystem.user.controller;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
@@ -10,12 +11,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.careydevelopment.ecosystem.user.model.Registrant;
+import com.careydevelopment.ecosystem.user.model.RegistrantAuthentication;
 import com.careydevelopment.ecosystem.user.model.User;
+import com.careydevelopment.ecosystem.user.repository.RegistrantAuthenticationRepository;
 import com.careydevelopment.ecosystem.user.service.RegistrantService;
 import com.careydevelopment.ecosystem.user.service.ServiceException;
 
@@ -34,6 +39,43 @@ public class RegistrationController {
     
     @Autowired
     private Validator validator;
+    
+    @Autowired
+    private RegistrantAuthenticationRepository registrantAuthenticationRepository;
+    
+    
+    @GetMapping("/emailVerificationStatus")
+    public ResponseEntity<?> getEmailVerificationStatus(@RequestParam String username, @RequestParam String code) {
+        LOG.debug("Checking email verification for user " + username + " with code " + code);
+
+        boolean verified = registrantService.validateEmailCode(username, code);
+        if (verified) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+        
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+    
+    
+    @GetMapping("/smsVerificationStatus")
+    public ResponseEntity<?> getSmsVerificationStatus(@RequestParam String username, @RequestParam String code) {
+        LOG.debug("Checking SMS verification for user " + username + " with code " + code);
+
+        List<RegistrantAuthentication> auths = registrantAuthenticationRepository.findByUsernameAndTypeOrderByTimeDesc(username, RegistrantAuthentication.Type.TEXT.toString());
+        
+        if (auths != null && auths.size() > 0) {
+            //most recent persisted record will be the latest SMS record
+            RegistrantAuthentication auth = auths.get(0);
+            
+            boolean verified = registrantService.validateTextCode(auth.getRequestId(), code);
+            
+            if (verified) {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            }
+        }
+        
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
     
     
     @PostMapping("/registrant")

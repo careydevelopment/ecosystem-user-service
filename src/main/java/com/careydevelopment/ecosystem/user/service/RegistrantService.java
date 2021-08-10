@@ -55,9 +55,24 @@ public class RegistrantService {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private SmsService smsService;
     
-    public List<RegistrantAuthentication> validateEmailCode(String username, String code) {
-        return validateCode(username, code, RegistrantAuthentication.Type.EMAIL);
+    
+    public boolean validateTextCode(String requestId, String code) {
+        boolean verified = smsService.checkValidationCode(requestId, code);
+        return verified;
+    }
+  
+    
+    public boolean validateEmailCode(String username, String code) {
+        List<RegistrantAuthentication> list = validateCode(username, code, RegistrantAuthentication.Type.EMAIL);
+        
+        if (list != null && list.size() > 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
     
     
@@ -71,18 +86,27 @@ public class RegistrantService {
     
     
     public void createTextCode(Registrant registrant) {
-        createCode(registrant.getUsername(), RegistrantAuthentication.Type.TEXT);
+        String requestId = smsService.sendValidationCode(registrant.getPhone());
+        
+        if (requestId != null) {
+            RegistrantAuthentication auth = new RegistrantAuthentication();
+            auth.setUsername(registrant.getUsername());
+            auth.setTime(System.currentTimeMillis());
+            auth.setType(RegistrantAuthentication.Type.TEXT);
+            auth.setRequestId(requestId);
+            
+            registrantAuthenticationRepository.save(auth);            
+        }
     }
     
     
     public void createEmailCode(Registrant registrant) {
         String code = createCode(registrant.getUsername(), RegistrantAuthentication.Type.EMAIL);
-        
 
-        String validationBody = "\n\nYour validation code for Carey Development, LLC and the CarEcosystem Network.\n\n"
-                + "Use validation code: " + code;
+        String validationBody = "\n\nYour verification code for Carey Development, LLC and the CarEcosystem Network.\n\n"
+                + "Use verification code: " + code;
                 
-        emailService.sendSimpleMessage(registrant.getEmailAddress(), "Your Validation Code", validationBody);
+        emailService.sendSimpleMessage(registrant.getEmailAddress(), "Your Verification Code", validationBody);
     }
     
     
