@@ -146,6 +146,7 @@ public class RegistrantService {
         user.setLastName(registrant.getLastName());
         user.setPassword(encoder.encode(registrant.getPassword()));
         user.setUsername(registrant.getUsername());
+        user.setPhoneNumber(registrant.getPhone());
         
         return user;
     }
