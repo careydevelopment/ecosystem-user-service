@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -81,6 +82,7 @@ public class RegistrantService {
             }
         } catch (IOException e) {
             LOG.error("Problem validating recaptcha!", e);
+            throw new ServiceException("Problem validating recaptcha!", HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
     

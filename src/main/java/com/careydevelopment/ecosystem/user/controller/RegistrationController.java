@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.careydevelopment.ecosystem.user.model.Registrant;
 import com.careydevelopment.ecosystem.user.model.User;
 import com.careydevelopment.ecosystem.user.service.RegistrantService;
+import com.careydevelopment.ecosystem.user.service.ServiceException;
 
 import us.careydevelopment.util.api.model.ValidationErrorResponse;
 import us.careydevelopment.util.api.response.ResponseEntityUtil;
@@ -52,11 +53,16 @@ public class RegistrationController {
             return ResponseEntityUtil.createResponseEntity(response);
         }
         
-        User savedUser = registrantService.saveUser(registrant);
-        if (savedUser == null) {
-            return ResponseEntityUtil.createResponseEntityWithError("Registrant not saved. Please contact support.", HttpStatus.INTERNAL_SERVER_ERROR);
+        try {
+            User savedUser = registrantService.saveUser(registrant);
+            
+            if (savedUser == null) {
+                return ResponseEntityUtil.createResponseEntityWithError("Registrant not saved. Please contact support.", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
+        } catch (ServiceException se) {
+            return ResponseEntityUtil.createResponseEntityWithError(se.getMessage(), se.getStatusCode());
         }
-        
-        return ResponseEntity.ok(savedUser);
     }
 }

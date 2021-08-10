@@ -17,6 +17,8 @@ node {
 	
 	    stage('Copy properties files') {
 	       sh 'cp ../config/ecosystem-user-service/application.properties ./src/main/resources'
+	       
+	       //for recaptcha
 	       sh 'cp ../config/ecosystem-user-service/carey-development-service-config.json .'   
         } 
 	
