@@ -33,15 +33,18 @@ public class ServerSetup {
     @Bean
     public TomcatServletWebServerFactory servletContainer() {
         TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory();
-        Connector ajpConnector = new Connector("AJP/1.3");
-        ajpConnector.setPort(ajpPort);
-        ajpConnector.setSecure(false);
-        ajpConnector.setAllowTrace(false);
-        ajpConnector.setScheme("https");
-        
-        ((AbstractAjpProtocol) ajpConnector.getProtocolHandler()).setSecretRequired(false);
-        
-        tomcat.addAdditionalTomcatConnectors(ajpConnector);
+
+        if (ajpEnabled) {
+            Connector ajpConnector = new Connector("AJP/1.3");
+            ajpConnector.setPort(ajpPort);
+            ajpConnector.setSecure(false);
+            ajpConnector.setAllowTrace(false);
+            ajpConnector.setScheme("https");
+            
+            ((AbstractAjpProtocol) ajpConnector.getProtocolHandler()).setSecretRequired(false);
+            
+            tomcat.addAdditionalTomcatConnectors(ajpConnector);            
+        }
 
         return tomcat;
     }

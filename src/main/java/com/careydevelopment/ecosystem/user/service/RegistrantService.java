@@ -1,17 +1,12 @@
 package com.careydevelopment.ecosystem.user.service;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -37,6 +32,7 @@ public class RegistrantService {
 
     private static final float RECAPTCHA_MIN_SCORE = 0.8f;
     private static final int MAX_MINUTES_FOR_CODE = 5;
+      
     
     @Autowired
     private UserService userService;
@@ -56,6 +52,9 @@ public class RegistrantService {
     @Autowired
     private RegistrantAuthenticationRepository registrantAuthenticationRepository;
     
+    @Autowired
+    private EmailService emailService;
+
     
     public List<RegistrantAuthentication> validateEmailCode(String username, String code) {
         return validateCode(username, code, RegistrantAuthentication.Type.EMAIL);
@@ -77,18 +76,28 @@ public class RegistrantService {
     
     
     public void createEmailCode(Registrant registrant) {
-        createCode(registrant, RegistrantAuthentication.Type.EMAIL);
+        String code = createCode(registrant, RegistrantAuthentication.Type.EMAIL);
+        
+
+        String validationBody = "\n\nYour validation code for Carey Development, LLC and the CarEcosystem Network.\n\n"
+                + "Use validation code: " + code;
+                
+        emailService.sendSimpleMessage(registrant.getEmailAddress(), "Your Validation Code", validationBody);
     }
     
     
-    public void createCode(Registrant registrant, RegistrantAuthentication.Type type) {
+    public String createCode(Registrant registrant, RegistrantAuthentication.Type type) {
         RegistrantAuthentication auth = new RegistrantAuthentication();
         auth.setRegistrant(registrant);
         auth.setTime(System.currentTimeMillis());
         auth.setType(type);
-        auth.setCode(totpUtil.getTOTPCode());
+        
+        String code = totpUtil.getTOTPCode();
+        auth.setCode(code);
         
         registrantAuthenticationRepository.save(auth);
+        
+        return code;
     }
     
     
