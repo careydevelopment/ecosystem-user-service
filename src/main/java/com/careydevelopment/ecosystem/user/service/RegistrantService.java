@@ -85,17 +85,21 @@ public class RegistrantService {
     }
     
     
-    public void createTextCode(Registrant registrant) {
-        String requestId = smsService.sendValidationCode(registrant.getPhone());
+    public void createTextCode(String username) {
+        User user = userRepository.findByUsername(username);
         
-        if (requestId != null) {
-            RegistrantAuthentication auth = new RegistrantAuthentication();
-            auth.setUsername(registrant.getUsername());
-            auth.setTime(System.currentTimeMillis());
-            auth.setType(RegistrantAuthentication.Type.TEXT);
-            auth.setRequestId(requestId);
+        if (user != null) {
+            String requestId = smsService.sendValidationCode(user.getPhoneNumber());
             
-            registrantAuthenticationRepository.save(auth);            
+            if (requestId != null) {
+                RegistrantAuthentication auth = new RegistrantAuthentication();
+                auth.setUsername(username);
+                auth.setTime(System.currentTimeMillis());
+                auth.setType(RegistrantAuthentication.Type.TEXT);
+                auth.setRequestId(requestId);
+                
+                registrantAuthenticationRepository.save(auth);            
+            }    
         }
     }
     

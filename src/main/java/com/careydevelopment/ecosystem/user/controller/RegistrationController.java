@@ -49,7 +49,9 @@ public class RegistrationController {
         LOG.debug("Checking email verification for user " + username + " with code " + code);
 
         boolean verified = registrantService.validateEmailCode(username, code);
+        
         if (verified) {
+            registrantService.createTextCode(username);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
         
