@@ -1,24 +1,33 @@
 package com.careydevelopment.ecosystem.user.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.careydevelopment.ecosystem.user.model.Registrant;
+import com.careydevelopment.ecosystem.user.model.RegistrantAuthentication;
 import com.careydevelopment.ecosystem.user.model.User;
 import com.careydevelopment.ecosystem.user.model.UserSearchCriteria;
+import com.careydevelopment.ecosystem.user.repository.RegistrantAuthenticationRepository;
 import com.careydevelopment.ecosystem.user.repository.UserRepository;
 import com.careydevelopment.ecosystem.user.util.RecaptchaUtil;
+import com.careydevelopment.ecosystem.user.util.TotpUtil;
 
 import us.careydevelopment.util.api.model.ValidationError;
 import us.careydevelopment.util.api.model.ValidationErrorResponse;
+import us.careydevelopment.util.date.DateConversionUtil;
 
 
 @Service
@@ -27,6 +36,7 @@ public class RegistrantService {
     private static final Logger LOG = LoggerFactory.getLogger(RegistrantService.class);
 
     private static final float RECAPTCHA_MIN_SCORE = 0.8f;
+    private static final int MAX_MINUTES_FOR_CODE = 5;
     
     @Autowired
     private UserService userService;
@@ -37,9 +47,49 @@ public class RegistrantService {
     @Autowired
     private PasswordEncoder encoder;
     
-    
     @Autowired
     private RecaptchaUtil recaptchaUtil;
+    
+    @Autowired
+    private TotpUtil totpUtil;
+    
+    @Autowired
+    private RegistrantAuthenticationRepository registrantAuthenticationRepository;
+    
+    
+    public List<RegistrantAuthentication> validateEmailCode(String username, String code) {
+        return validateCode(username, code, RegistrantAuthentication.Type.EMAIL);
+    }
+    
+    
+    public List<RegistrantAuthentication> validateCode(String username, String code, RegistrantAuthentication.Type type) {
+        long time = System.currentTimeMillis() - (DateConversionUtil.NUMBER_OF_MILLISECONDS_IN_MINUTE * MAX_MINUTES_FOR_CODE);
+        
+        List<RegistrantAuthentication> auths = registrantAuthenticationRepository.codeCheck(username, time, type.toString(), code);
+        
+        return auths;
+    }
+    
+    
+    public void createTextCode(Registrant registrant) {
+        createCode(registrant, RegistrantAuthentication.Type.TEXT);
+    }
+    
+    
+    public void createEmailCode(Registrant registrant) {
+        createCode(registrant, RegistrantAuthentication.Type.EMAIL);
+    }
+    
+    
+    public void createCode(Registrant registrant, RegistrantAuthentication.Type type) {
+        RegistrantAuthentication auth = new RegistrantAuthentication();
+        auth.setRegistrant(registrant);
+        auth.setTime(System.currentTimeMillis());
+        auth.setType(type);
+        auth.setCode(totpUtil.getTOTPCode());
+        
+        registrantAuthenticationRepository.save(auth);
+    }
     
     
     public User saveUser(Registrant registrant) {
