@@ -87,6 +87,7 @@ public class RegistrantService {
     
     public void createTextCode(String username) {
         User user = userRepository.findByUsername(username);
+        LOG.debug("Found user is " + user);
         
         if (user != null) {
             String requestId = smsService.sendValidationCode(user.getPhoneNumber());
