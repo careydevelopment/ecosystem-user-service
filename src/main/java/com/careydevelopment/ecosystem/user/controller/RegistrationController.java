@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.careydevelopment.ecosystem.user.model.Registrant;
-import com.careydevelopment.ecosystem.user.model.RegistrantAuthentication;
 import com.careydevelopment.ecosystem.user.model.User;
 import com.careydevelopment.ecosystem.user.service.RegistrantService;
 import com.careydevelopment.ecosystem.user.service.ServiceException;

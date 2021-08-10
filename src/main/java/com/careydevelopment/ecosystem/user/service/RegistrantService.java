@@ -71,12 +71,12 @@ public class RegistrantService {
     
     
     public void createTextCode(Registrant registrant) {
-        createCode(registrant, RegistrantAuthentication.Type.TEXT);
+        createCode(registrant.getUsername(), RegistrantAuthentication.Type.TEXT);
     }
     
     
     public void createEmailCode(Registrant registrant) {
-        String code = createCode(registrant, RegistrantAuthentication.Type.EMAIL);
+        String code = createCode(registrant.getUsername(), RegistrantAuthentication.Type.EMAIL);
         
 
         String validationBody = "\n\nYour validation code for Carey Development, LLC and the CarEcosystem Network.\n\n"
@@ -86,9 +86,9 @@ public class RegistrantService {
     }
     
     
-    public String createCode(Registrant registrant, RegistrantAuthentication.Type type) {
+    public String createCode(String username, RegistrantAuthentication.Type type) {
         RegistrantAuthentication auth = new RegistrantAuthentication();
-        auth.setRegistrant(registrant);
+        auth.setUsername(username);
         auth.setTime(System.currentTimeMillis());
         auth.setType(type);
         

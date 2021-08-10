@@ -8,17 +8,16 @@ public class RegistrantAuthentication {
 
     public enum Type { EMAIL, TEXT };
     
-    private Registrant registrant;
+    private String username;
     private Long time;
     private Type type;
     private String code;
     
-    
-    public Registrant getRegistrant() {
-        return registrant;
+    public String getUsername() {
+        return username;
     }
-    public void setRegistrant(Registrant registrant) {
-        this.registrant = registrant;
+    public void setUsername(String username) {
+        this.username = username;
     }
     public Long getTime() {
         return time;

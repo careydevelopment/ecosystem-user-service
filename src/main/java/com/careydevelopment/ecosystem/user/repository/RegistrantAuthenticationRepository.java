@@ -12,6 +12,6 @@ import com.careydevelopment.ecosystem.user.model.RegistrantAuthentication;
 @Repository
 public interface RegistrantAuthenticationRepository extends MongoRepository<RegistrantAuthentication, String> {
 
-    @Query("{ 'registrant.username': '?0', 'time' : { $gte: ?1 }, 'type': '?2', 'code': '?3' }") 
+    @Query("{ 'username': '?0', 'time' : { $gte: ?1 }, 'type': '?2', 'code': '?3' }") 
     public List<RegistrantAuthentication> codeCheck(String username, long sinceTime, String type, String code); 
 }
