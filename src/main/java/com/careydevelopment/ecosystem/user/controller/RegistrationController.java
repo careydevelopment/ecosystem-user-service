@@ -24,6 +24,7 @@ import com.careydevelopment.ecosystem.user.repository.RegistrantAuthenticationRe
 import com.careydevelopment.ecosystem.user.service.RegistrantService;
 import com.careydevelopment.ecosystem.user.service.ServiceException;
 
+import us.careydevelopment.ecosystem.jwt.constants.Authority;
 import us.careydevelopment.util.api.model.ValidationErrorResponse;
 import us.careydevelopment.util.api.response.ResponseEntityUtil;
 import us.careydevelopment.util.api.util.ValidationUtil;
@@ -72,6 +73,7 @@ public class RegistrationController {
             boolean verified = registrantService.validateTextCode(auth.getRequestId(), code);
             
             if (verified) {
+                registrantService.addAuthority(username, Authority.BASIC_ECOSYSTEM_USER);
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
             }
         }

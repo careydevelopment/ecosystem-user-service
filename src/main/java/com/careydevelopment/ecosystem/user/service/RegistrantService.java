@@ -59,6 +59,16 @@ public class RegistrantService {
     private SmsService smsService;
     
     
+    public void addAuthority(String username, String authority) {
+        User user = userRepository.findByUsername(username);
+        
+        if (user != null) {
+            user.getAuthorityNames().add(authority);
+            userRepository.save(user);
+        }
+    }
+    
+    
     public boolean validateTextCode(String requestId, String code) {
         boolean verified = smsService.checkValidationCode(requestId, code);
         return verified;
