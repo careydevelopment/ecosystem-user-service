@@ -200,7 +200,7 @@ public class RegistrantService {
             
             List<User> users = userService.search(searchCriteria);
             if (users.size() > 0) {
-                addError(errorResponse, "Email address is taken", "email", "emailTaken");
+                addError(errorResponse, "Email address is taken", "emailAddress", "emailTaken");
             }
         }
     }
