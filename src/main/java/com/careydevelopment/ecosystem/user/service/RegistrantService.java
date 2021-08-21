@@ -32,7 +32,8 @@ public class RegistrantService {
 
     private static final float RECAPTCHA_MIN_SCORE = 0.8f;
     private static final int MAX_MINUTES_FOR_CODE = 5;
-      
+    private static final int MAX_FAILED_ATTEMPTS = 5;  
+    
     
     @Autowired
     private UserService userService;
@@ -69,19 +70,66 @@ public class RegistrantService {
     }
     
     
-    public boolean validateTextCode(String requestId, String code) {
-        boolean verified = smsService.checkValidationCode(requestId, code);
+    public boolean validateTextCode(RegistrantAuthentication auth, String code) {
+        boolean verified = false;
+        LOG.debug("Failed attempts for " + auth.getUsername() + " is " + auth.getFailedAttempts());
+        
+        if (auth.getFailedAttempts() < MAX_FAILED_ATTEMPTS) {
+            String requestId = auth.getRequestId();
+            verified = smsService.checkValidationCode(requestId, code);
+            
+            if (!verified) {
+                auth.setFailedAttempts(auth.getFailedAttempts() + 1);
+                registrantAuthenticationRepository.save(auth);
+            }
+        }
+        
         return verified;
     }
   
     
     public boolean validateEmailCode(String username, String code) {
-        List<RegistrantAuthentication> list = validateCode(username, code, RegistrantAuthentication.Type.EMAIL);
+        int previousAttempts = getPreviousAttempts(username, RegistrantAuthentication.Type.EMAIL);
         
-        if (list != null && list.size() > 0) {
-            return true;
+        if (previousAttempts < MAX_FAILED_ATTEMPTS) {
+            List<RegistrantAuthentication> list = validateCode(username, code, RegistrantAuthentication.Type.EMAIL);
+            
+            if (list != null && list.size() > 0) {
+                return true;
+            } else {
+                incrementFailedAttempts(username, RegistrantAuthentication.Type.EMAIL);
+                return false;
+            }    
         } else {
             return false;
+        }
+    }
+    
+    
+    private int getPreviousAttempts(String username, RegistrantAuthentication.Type type) {
+        int previousAttempts = 0;
+        LOG.debug("Checking previous attempts for " + username);
+        
+        List<RegistrantAuthentication> auths = registrantAuthenticationRepository.findByUsernameAndTypeOrderByTimeDesc(username, type.toString());
+
+        if (auths != null && auths.size() > 0) {
+            RegistrantAuthentication auth = auths.get(0);
+            previousAttempts = auth.getFailedAttempts();
+        }
+        
+        LOG.debug("Failed attempts is " + previousAttempts);
+        return previousAttempts;
+    }
+    
+    
+    private void incrementFailedAttempts(String username, RegistrantAuthentication.Type type) {
+        List<RegistrantAuthentication> auths = registrantAuthenticationRepository.findByUsernameAndTypeOrderByTimeDesc(username, type.toString());
+
+        if (auths != null && auths.size() > 0) {
+            RegistrantAuthentication auth = auths.get(0);
+            auth.setFailedAttempts(auth.getFailedAttempts() + 1);
+            
+            registrantAuthenticationRepository.save(auth);
         }
     }
     

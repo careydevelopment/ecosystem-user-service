@@ -70,7 +70,7 @@ public class RegistrationController {
             //most recent persisted record will be the latest SMS record
             RegistrantAuthentication auth = auths.get(0);
             
-            boolean verified = registrantService.validateTextCode(auth.getRequestId(), code);
+            boolean verified = registrantService.validateTextCode(auth, code);
             
             if (verified) {
                 registrantService.addAuthority(username, Authority.BASIC_ECOSYSTEM_USER);

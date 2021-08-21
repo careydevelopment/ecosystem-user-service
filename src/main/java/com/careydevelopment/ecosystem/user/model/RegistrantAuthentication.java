@@ -11,6 +11,7 @@ public class RegistrantAuthentication {
     private String username;
     private Long time;
     private Type type;
+    private int failedAttempts = 0;
     
     //used for email
     private String code;
@@ -48,6 +49,13 @@ public class RegistrantAuthentication {
     }
     public void setRequestId(String requestId) {
         this.requestId = requestId;
+    }
+    
+    public int getFailedAttempts() {
+        return failedAttempts;
+    }
+    public void setFailedAttempts(int failedAttempts) {
+        this.failedAttempts = failedAttempts;
     }
     public String toString() {
         return ReflectionToStringBuilder.toString(this);
