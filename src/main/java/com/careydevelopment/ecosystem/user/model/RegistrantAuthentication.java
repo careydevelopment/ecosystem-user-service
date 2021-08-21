@@ -1,6 +1,7 @@
 package com.careydevelopment.ecosystem.user.model;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "#{@environment.getProperty('mongo.registrant-authentication.collection')}")
@@ -8,10 +9,13 @@ public class RegistrantAuthentication {
 
     public enum Type { EMAIL, TEXT };
     
+    @Id
+    private String id;
+    
     private String username;
     private Long time;
     private Type type;
-    private int failedAttempts = 0;
+    private Integer failedAttempts = 0;
     
     //used for email
     private String code;
@@ -51,12 +55,46 @@ public class RegistrantAuthentication {
         this.requestId = requestId;
     }
     
-    public int getFailedAttempts() {
+    public Integer getFailedAttempts() {
         return failedAttempts;
     }
-    public void setFailedAttempts(int failedAttempts) {
+    public void setFailedAttempts(Integer failedAttempts) {
         this.failedAttempts = failedAttempts;
     }
+    
+    public String getId() {
+        return id;
+    }
+    public void setId(String id) {
+        this.id = id;
+    }
+    
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        return result;
+    }
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        RegistrantAuthentication other = (RegistrantAuthentication) obj;
+        if (id == null) {
+            if (other.getId() != null)
+                return false;
+        } else if (!id.equals(other.getId()))
+            return false;
+        return true;
+    }
+    
     public String toString() {
         return ReflectionToStringBuilder.toString(this);
     }
