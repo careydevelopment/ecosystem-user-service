@@ -23,6 +23,10 @@
         <appender-ref ref="FILE" />
     </logger>
     
+    <logger name="us.careydevelopment" level="DEBUG" additivity="true">
+        <appender-ref ref="FILE" />
+    </logger>
+    
     <logger name="org.springframework" level="INFO"/>
     
     <logger name="org.mongodb.driver" level="INFO"/>

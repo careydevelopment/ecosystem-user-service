@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,12 +26,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.careydevelopment.ecosystem.user.model.User;
 import com.careydevelopment.ecosystem.user.model.UserSearchCriteria;
+import com.careydevelopment.ecosystem.user.repository.UserRepository;
 import com.careydevelopment.ecosystem.user.service.UserService;
+import com.careydevelopment.ecosystem.user.util.JwtUtil;
 import com.careydevelopment.ecosystem.user.util.SecurityUtil;
 import com.careydevelopment.ecosystem.user.util.UserFileUtil;
 
 import us.careydevelopment.ecosystem.file.exception.FileTooLargeException;
 import us.careydevelopment.ecosystem.file.exception.MissingFileException;
+import us.careydevelopment.ecosystem.jwt.constants.CookieConstants;
 
 @RestController
 public class UserController {
@@ -45,6 +50,12 @@ public class UserController {
     
     @Autowired
     private SecurityUtil securityUtil;
+    
+    @Autowired
+    private JwtUtil jwtUtil;
+    
+    @Autowired
+    private UserRepository userRepo;
     
     
     @GetMapping("/{userId}/profileImage")
@@ -104,6 +115,26 @@ public class UserController {
             LOG.debug("Not allowed to update user ID " + userId);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+    }
+    
+    
+    @GetMapping("/loginCheck")
+    public ResponseEntity<?> loginCheck(@CookieValue(CookieConstants.ACCESS_TOKEN_COOKIE_NAME) String jwtToken) {
+        if (!StringUtils.isBlank(jwtToken)) {
+            try {          
+                //validate the token
+                jwtUtil.validateTokenWithSignature(jwtToken);
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+            } 
+            
+            String username = jwtUtil.getUsernameFromToken(jwtToken);
+            User user = userRepo.findByUsername(username);
+            
+            return ResponseEntity.ok(user);
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No token found");
     }
     
     
