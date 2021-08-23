@@ -119,7 +119,7 @@ public class UserController {
     
     
     @GetMapping("/loginCheck")
-    public ResponseEntity<?> loginCheck(@CookieValue(CookieConstants.ACCESS_TOKEN_COOKIE_NAME) String jwtToken) {
+    public ResponseEntity<?> loginCheck(@CookieValue(name=CookieConstants.ACCESS_TOKEN_COOKIE_NAME, required=false) String jwtToken) {
         if (!StringUtils.isBlank(jwtToken)) {
             try {          
                 //validate the token
