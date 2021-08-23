@@ -2,9 +2,11 @@ package com.careydevelopment.ecosystem.user.controller;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,26 +14,29 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.careydevelopment.ecosystem.user.model.User;
+import com.careydevelopment.ecosystem.user.model.UserSearchCriteria;
+import com.careydevelopment.ecosystem.user.repository.UserRepository;
 import com.careydevelopment.ecosystem.user.service.UserService;
+import com.careydevelopment.ecosystem.user.util.JwtUtil;
 import com.careydevelopment.ecosystem.user.util.SecurityUtil;
 import com.careydevelopment.ecosystem.user.util.UserFileUtil;
 
 import us.careydevelopment.ecosystem.file.exception.FileTooLargeException;
 import us.careydevelopment.ecosystem.file.exception.MissingFileException;
+import us.careydevelopment.ecosystem.jwt.constants.CookieConstants;
 
 @RestController
-@RequestMapping("/user")
 public class UserController {
     
     private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
@@ -45,6 +50,12 @@ public class UserController {
     
     @Autowired
     private SecurityUtil securityUtil;
+    
+    @Autowired
+    private JwtUtil jwtUtil;
+    
+    @Autowired
+    private UserRepository userRepo;
     
     
     @GetMapping("/{userId}/profileImage")
@@ -107,6 +118,26 @@ public class UserController {
     }
     
     
+    @GetMapping("/loginCheck")
+    public ResponseEntity<?> loginCheck(@CookieValue(name=CookieConstants.ACCESS_TOKEN_COOKIE_NAME, required=false) String jwtToken) {
+        if (!StringUtils.isBlank(jwtToken)) {
+            try {          
+                //validate the token
+                jwtUtil.validateTokenWithSignature(jwtToken);
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+            } 
+            
+            String username = jwtUtil.getUsernameFromToken(jwtToken);
+            User user = userRepo.findByUsername(username);
+            
+            return ResponseEntity.ok(user);
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No token found");
+    }
+    
+    
     @GetMapping("/me")
     public ResponseEntity<?> me() {
         try {
@@ -116,5 +147,20 @@ public class UserController {
             LOG.error("Problem retrieving current user!", e);
              return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+    }
+    
+    
+    @GetMapping("/simpleSearch")
+    public ResponseEntity<?> search(@RequestParam(required = false) String emailAddress, @RequestParam(required = false) String username) {
+        UserSearchCriteria searchCriteria = new UserSearchCriteria();
+        searchCriteria.setEmailAddress(emailAddress);
+        searchCriteria.setUsername(username);
+        
+        LOG.debug("Search criteria is " + searchCriteria);
+        
+        List<User> users = userService.search(searchCriteria);
+        LOG.debug("Returning users " + users);
+        
+        return ResponseEntity.ok(users);                
     }
 }

@@ -2,12 +2,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.careydevelopment.ecosystem.user</groupId>
     <artifactId>ecosystem-user-service</artifactId>
-    <version>0.3.4-SNAPSHOT</version>
+    <version>1.0.0-RELEASE</version>
   
     <parent>
         <groupId>us.careydevelopment.ecosystem</groupId>
         <artifactId>parent</artifactId>
-        <version>1.5.0-RELEASE</version>
+        <version>1.8.0-RELEASE</version>
     </parent>
 
     <dependencies>
@@ -16,5 +16,53 @@
             <artifactId>file-util</artifactId>
             <version>1.0.0-RELEASE</version>
         </dependency>
+        <dependency>
+		    <groupId>commons-validator</groupId>
+		    <artifactId>commons-validator</artifactId>
+		    <version>1.7</version>
+		</dependency>
+		<dependency>
+            <groupId>us.careydevelopment.util</groupId>
+            <artifactId>api-util</artifactId>
+            <version>1.4.2-RELEASE</version>
+        </dependency>
+		<dependency>
+		    <groupId>org.hibernate.validator</groupId>
+		    <artifactId>hibernate-validator</artifactId>
+		</dependency>
+		<dependency>
+            <groupId>com.google.cloud</groupId>
+            <artifactId>google-cloud-recaptchaenterprise</artifactId>
+        </dependency>
+        <dependency>
+		    <groupId>de.taimos</groupId>
+		    <artifactId>totp</artifactId>
+		    <version>1.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>commons-codec</groupId>
+		    <artifactId>commons-codec</artifactId>
+		</dependency>
+		<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+         </dependency>
+		 <dependency>
+		    <groupId>com.vonage</groupId>
+		    <artifactId>client</artifactId>
+		    <version>6.4.0</version>
+		 </dependency>
     </dependencies>
+    
+    <dependencyManagement>
+	   <dependencies>
+	       <dependency>
+	           <groupId>com.google.cloud</groupId>
+	           <artifactId>libraries-bom</artifactId>
+	           <version>20.9.0</version>
+	           <type>pom</type>
+	           <scope>import</scope>
+	       </dependency>
+	   </dependencies>
+	</dependencyManagement>
 </project>
