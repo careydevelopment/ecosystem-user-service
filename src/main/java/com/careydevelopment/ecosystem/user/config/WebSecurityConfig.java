@@ -18,7 +18,7 @@ public class WebSecurityConfig extends CredentialsAndJwtSecurityConfig {
 
     @Override
     protected String[] permitAllUrls() {
-        String[] permitAll = { "/registrant", "/simpleSearch", "/emailVerificationStatus", "/smsVerificationStatus", "/loginCheck" };
+        String[] permitAll = { "/registrant", "/simpleSearch", "/emailVerificationStatus", "/smsVerificationStatus", "/" };
         return permitAll;
     }
     
