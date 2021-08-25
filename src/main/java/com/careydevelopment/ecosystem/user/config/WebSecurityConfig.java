@@ -25,14 +25,16 @@ public class WebSecurityConfig extends CredentialsAndJwtSecurityConfig {
     @Value("${recaptcha.site.key}")
     private String siteKey;
     
+    
     @Override
     protected String[] permitAllUrls() {
         String[] permitAll = { "/registrant", "/simpleSearch", "/emailVerificationStatus", "/smsVerificationStatus", "/" };
         return permitAll;
     }
     
+    
     @Bean
-    public RecaptchaUtil recaptchaUtil( ) {
+    public RecaptchaUtil recaptchaUtil() {
         return new RecaptchaUtil(projectID, siteKey);
     }
     
@@ -45,7 +47,6 @@ public class WebSecurityConfig extends CredentialsAndJwtSecurityConfig {
         this.jwtUserDetailsService = jwtUserDetailsService;
         this.jwtUtil = jwtUtil;
         this.ipTracker = ipLogService;
-        
     }        
         
 }

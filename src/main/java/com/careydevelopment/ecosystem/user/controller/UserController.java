@@ -4,6 +4,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -13,6 +15,8 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,14 +28,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.careydevelopment.ecosystem.user.model.User;
 import com.careydevelopment.ecosystem.user.model.UserSearchCriteria;
-import com.careydevelopment.ecosystem.user.repository.UserRepository;
 import com.careydevelopment.ecosystem.user.service.UserService;
-import com.careydevelopment.ecosystem.user.util.JwtUtil;
 import com.careydevelopment.ecosystem.user.util.SecurityUtil;
 import com.careydevelopment.ecosystem.user.util.UserFileUtil;
 
 import us.careydevelopment.ecosystem.file.exception.FileTooLargeException;
 import us.careydevelopment.ecosystem.file.exception.MissingFileException;
+import us.careydevelopment.ecosystem.jwt.constants.CookieConstants;
 
 @RestController
 public class UserController {
@@ -118,6 +121,30 @@ public class UserController {
             LOG.error("Problem retrieving current user!", e);
              return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+    }
+    
+    
+    @DeleteMapping("/session")
+    public ResponseEntity<?> logout(@CookieValue(name=CookieConstants.ACCESS_TOKEN_COOKIE_NAME, required=false) String jwtToken,
+            HttpServletResponse response) {
+        
+        if (jwtToken != null) {
+            expireCookie(response);
+        }
+        
+        return ResponseEntity.ok().build();
+    }
+    
+    
+    private void expireCookie(HttpServletResponse response) {
+        final Cookie cookie = new Cookie(CookieConstants.ACCESS_TOKEN_COOKIE_NAME, "");
+        
+        cookie.setMaxAge(0) ;
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setSecure(true);
+        
+        response.addCookie(cookie);
     }
     
     
