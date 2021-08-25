@@ -82,7 +82,7 @@ public class RegistrationController {
     }
     
     
-    @PostMapping("/registrant")
+    @PostMapping("/")
     public ResponseEntity<?> createRegistrant(@RequestBody Registrant registrant) {
         LOG.debug("Registrant is " + registrant);
         

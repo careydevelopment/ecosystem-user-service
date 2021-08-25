@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.careydevelopment.ecosystem.user</groupId>
     <artifactId>ecosystem-user-service</artifactId>
-    <version>1.0.0-RELEASE</version>
+    <version>1.1.0-RELEASE</version>
   
     <parent>
         <groupId>us.careydevelopment.ecosystem</groupId>
@@ -11,6 +11,11 @@
     </parent>
 
     <dependencies>
+	    <dependency>
+            <groupId>us.careydevelopment.ecosystem</groupId>
+            <artifactId>jwt-security</artifactId>
+            <version>1.8.0-RELEASE</version>
+        </dependency>
         <dependency>
             <groupId>us.careydevelopment.ecosystem</groupId>
             <artifactId>file-util</artifactId>
@@ -30,10 +35,6 @@
 		    <groupId>org.hibernate.validator</groupId>
 		    <artifactId>hibernate-validator</artifactId>
 		</dependency>
-		<dependency>
-            <groupId>com.google.cloud</groupId>
-            <artifactId>google-cloud-recaptchaenterprise</artifactId>
-        </dependency>
         <dependency>
 		    <groupId>de.taimos</groupId>
 		    <artifactId>totp</artifactId>

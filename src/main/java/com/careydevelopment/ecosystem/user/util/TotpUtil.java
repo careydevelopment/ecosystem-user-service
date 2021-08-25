@@ -12,7 +12,7 @@ import de.taimos.totp.TOTP;
 @Component
 public class TotpUtil {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RecaptchaUtil.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TotpUtil.class);
 
     
     @Value("${tfa.secret.key}")

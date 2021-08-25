@@ -17,9 +17,9 @@ import com.careydevelopment.ecosystem.user.model.User;
 import com.careydevelopment.ecosystem.user.model.UserSearchCriteria;
 import com.careydevelopment.ecosystem.user.repository.RegistrantAuthenticationRepository;
 import com.careydevelopment.ecosystem.user.repository.UserRepository;
-import com.careydevelopment.ecosystem.user.util.RecaptchaUtil;
 import com.careydevelopment.ecosystem.user.util.TotpUtil;
 
+import us.careydevelopment.ecosystem.jwt.util.RecaptchaUtil;
 import us.careydevelopment.util.api.model.ValidationError;
 import us.careydevelopment.util.api.model.ValidationErrorResponse;
 import us.careydevelopment.util.date.DateConversionUtil;
@@ -30,7 +30,6 @@ public class RegistrantService {
 
     private static final Logger LOG = LoggerFactory.getLogger(RegistrantService.class);
 
-    private static final float RECAPTCHA_MIN_SCORE = 0.8f;
     private static final int MAX_MINUTES_FOR_CODE = 5;
     private static final int MAX_FAILED_ATTEMPTS = 5;  
     
@@ -223,7 +222,7 @@ public class RegistrantService {
         try {
             float score = recaptchaUtil.createAssessment(registrant.getRecaptchaResponse());
             
-            if (score < RECAPTCHA_MIN_SCORE) {
+            if (score < RecaptchaUtil.RECAPTCHA_MIN_SCORE) {
                 //user-friendly error message not necessary if a bot is trying to get in
                 addError(errorResponse, "Google thinks you're a bot", null, null);
             }
