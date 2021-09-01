@@ -109,7 +109,10 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getAllErrors());
             } else {
                 InputSanitizer.sanitizeBasic(user);
+                
                 User updatedUser = userService.updateUser(user);
+                LOG.debug("updated user is " + updatedUser);
+                
                 return ResponseEntity.ok(updatedUser);    
             }
         } else {
