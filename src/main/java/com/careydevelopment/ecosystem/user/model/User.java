@@ -23,6 +23,7 @@ public class User extends BaseUser implements UserDetails {
 
     private static final long serialVersionUID = 3592549577903104696L;
 
+    
     @NotBlank(message = "Please provide a first name")
     @Size(max = 50, message = "Please enter a first name between 1 and 50 characters")
     private String firstName;
@@ -134,12 +135,10 @@ public class User extends BaseUser implements UserDetails {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-	
     
     public String getPassword() {
         return password;
     }
-
 
     public void setPassword(String password) {
         this.password = password;

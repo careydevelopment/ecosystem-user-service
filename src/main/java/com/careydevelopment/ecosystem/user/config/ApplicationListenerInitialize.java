@@ -58,9 +58,7 @@ public class ApplicationListenerInitialize implements ApplicationListener<Applic
     public void onApplicationEvent(ApplicationReadyEvent event) {
         
         //smsService.cancelRequest("eb8d98dece1b462f98ab3a6f089edda3");
-        
-        //smsService.sendValidationCode("19194123571");
-        
+                
         //smsService.checkValidationCode("a0bdc643a3614d3e86ae268a6b80a7a8", "0402");
         
 //        List<RegistrantAuthentication> list = this.registrantAuthenticationRepository.findAll();
@@ -85,7 +83,6 @@ public class ApplicationListenerInitialize implements ApplicationListener<Applic
 //      Registrant registrant = new Registrant();
 //      registrant.setUsername("jobab");
 //      registrant.setEmailAddress("mrbrianmcarey@gmail.com");
-//      registrant.setPhone("19194123571");        
 //      
 //      registrantService.createTextCode(registrant);
 
@@ -93,14 +90,19 @@ public class ApplicationListenerInitialize implements ApplicationListener<Applic
 //      list.forEach(auth -> {
 //          System.err.println(auth);          
 //      });
-
+        
+        
+        
+        //userRepository.save(user);
       UserSearchCriteria criteria = new UserSearchCriteria();
-      criteria.setUsername("jobab");
+      criteria.setUsername("bloonie");
       List<User> users = userService.search(criteria);
       System.err.println(users);
 
         if (users.size() > 0) {
-            userRepository.delete(users.get(0));
+            users.get(0).setCountry("US");
+            //this.userRepository.save(users.get(0));
+            //userRepository.delete(users.get(0));
             //registrantService.addAuthority("jobab", Authority.BASIC_ECOSYSTEM_USER);
         }
     }

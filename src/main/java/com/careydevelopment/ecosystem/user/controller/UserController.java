@@ -15,6 +15,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +36,7 @@ import com.careydevelopment.ecosystem.user.util.UserFileUtil;
 import us.careydevelopment.ecosystem.file.exception.FileTooLargeException;
 import us.careydevelopment.ecosystem.file.exception.MissingFileException;
 import us.careydevelopment.ecosystem.jwt.constants.CookieConstants;
+import us.careydevelopment.util.api.util.InputSanitizer;
 
 @RestController
 public class UserController {
@@ -97,14 +99,19 @@ public class UserController {
     
     
     @PutMapping("/{userId}")
-    public ResponseEntity<?> updateUser(@PathVariable String userId, @Valid @RequestBody User user) {
+    public ResponseEntity<?> updateUser(@PathVariable String userId, @Valid @RequestBody User user, BindingResult bindingResult) {
         boolean allowed = securityUtil.isAuthorizedByUserId(userId);
-        LOG.debug("Updating user ID " + userId);
-        LOG.debug("New user data is " + user);
+        LOG.debug("updated user data is " + user);
         
         if (allowed) {
-            User updatedUser = userService.updateUser(user);
-            return ResponseEntity.ok(updatedUser);
+            if (bindingResult.hasErrors()) {
+                LOG.debug("Binding result: " + bindingResult);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getAllErrors());
+            } else {
+                InputSanitizer.sanitizeBasic(user);
+                User updatedUser = userService.updateUser(user);
+                return ResponseEntity.ok(updatedUser);    
+            }
         } else {
             LOG.debug("Not allowed to update user ID " + userId);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
