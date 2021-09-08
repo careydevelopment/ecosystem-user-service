@@ -27,7 +27,10 @@ public class WebSecurityConfig extends CredentialsAndJwtSecurityConfig {
     private String siteKey;
     
     protected String[] getAllowedAuthorities() {
-        return new String[] { Authority.BASIC_ECOSYSTEM_USER };
+        return new String[] { 
+                Authority.BASIC_ECOSYSTEM_USER,
+                Authority.ADMIN_ECOSYSTEM_USER
+        };
     }
     
     
