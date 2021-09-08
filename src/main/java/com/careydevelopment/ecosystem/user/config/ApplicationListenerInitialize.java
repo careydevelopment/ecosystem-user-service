@@ -56,52 +56,6 @@ public class ApplicationListenerInitialize implements ApplicationListener<Applic
     
     
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        
-        //smsService.cancelRequest("eb8d98dece1b462f98ab3a6f089edda3");
-        
-        //smsService.sendValidationCode("19194123571");
-        
-        //smsService.checkValidationCode("a0bdc643a3614d3e86ae268a6b80a7a8", "0402");
-        
-//        List<RegistrantAuthentication> list = this.registrantAuthenticationRepository.findAll();
-//        list.forEach(auth -> {
-//            System.err.println(auth);
-//        });
-    
-        
-//        List<RegistrantAuthentication> list = registrantService.validateEmailCode("jobab", "635545");
-//        System.err.println(list);
-        
-//        
 
-        //System.err.println(totpUtil.getTOTPCode());
-    
-//        List<IpLog> list = ipLogRepository.findAll();
-//        list.forEach(ip -> {
-//            System.err.println(ip);
-//        });
-        
-
-//      Registrant registrant = new Registrant();
-//      registrant.setUsername("jobab");
-//      registrant.setEmailAddress("mrbrianmcarey@gmail.com");
-//      registrant.setPhone("19194123571");        
-//      
-//      registrantService.createTextCode(registrant);
-
-//      List<RegistrantAuthentication> list = registrantAuthenticationRepository.findByUsernameAndTypeOrderByTimeDesc("jobab", RegistrantAuthentication.Type.TEXT.toString());
-//      list.forEach(auth -> {
-//          System.err.println(auth);          
-//      });
-
-      UserSearchCriteria criteria = new UserSearchCriteria();
-      criteria.setUsername("jobab");
-      List<User> users = userService.search(criteria);
-      System.err.println(users);
-
-        if (users.size() > 0) {
-            userRepository.delete(users.get(0));
-            //registrantService.addAuthority("jobab", Authority.BASIC_ECOSYSTEM_USER);
-        }
     }
 }

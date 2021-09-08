@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.careydevelopment.ecosystem.user</groupId>
     <artifactId>ecosystem-user-service</artifactId>
-    <version>1.2.0-RELEASE</version>
+    <version>1.4.0</version>
   
     <parent>
         <groupId>us.careydevelopment.ecosystem</groupId>
@@ -14,7 +14,7 @@
 	    <dependency>
             <groupId>us.careydevelopment.ecosystem</groupId>
             <artifactId>jwt-security</artifactId>
-            <version>2.0.0-RELEASE</version>
+            <version>2.1.1</version>
         </dependency>
         <dependency>
             <groupId>us.careydevelopment.ecosystem</groupId>
@@ -29,7 +29,7 @@
 		<dependency>
             <groupId>us.careydevelopment.util</groupId>
             <artifactId>api-util</artifactId>
-            <version>1.4.2-RELEASE</version>
+            <version>1.5.1</version>
         </dependency>
 		<dependency>
 		    <groupId>org.hibernate.validator</groupId>
@@ -39,6 +39,11 @@
 		    <groupId>de.taimos</groupId>
 		    <artifactId>totp</artifactId>
 		    <version>1.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-text</artifactId>
+		    <version>1.9</version>
 		</dependency>
 		<dependency>
 		    <groupId>commons-codec</groupId>

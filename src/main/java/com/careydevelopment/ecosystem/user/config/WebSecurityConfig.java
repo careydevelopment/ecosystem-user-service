@@ -11,6 +11,7 @@ import com.careydevelopment.ecosystem.user.service.UserService;
 import com.careydevelopment.ecosystem.user.util.JwtUtil;
 
 import us.careydevelopment.ecosystem.jwt.config.CredentialsAndJwtSecurityConfig;
+import us.careydevelopment.ecosystem.jwt.constants.Authority;
 import us.careydevelopment.ecosystem.jwt.util.RecaptchaUtil;
 
 
@@ -24,6 +25,13 @@ public class WebSecurityConfig extends CredentialsAndJwtSecurityConfig {
     
     @Value("${recaptcha.site.key}")
     private String siteKey;
+    
+    protected String[] getAllowedAuthorities() {
+        return new String[] { 
+                Authority.BASIC_ECOSYSTEM_USER,
+                Authority.ADMIN_ECOSYSTEM_USER
+        };
+    }
     
     
     @Override

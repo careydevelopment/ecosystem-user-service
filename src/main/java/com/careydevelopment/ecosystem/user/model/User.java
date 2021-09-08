@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -23,45 +24,56 @@ public class User extends BaseUser implements UserDetails {
 
     private static final long serialVersionUID = 3592549577903104696L;
 
+    
+    @Pattern(regexp = "^[A-Za-z0-9 '/&#,.-]*$", message = "The only special characters allowed are: +@'/&#,.-")
     @NotBlank(message = "Please provide a first name")
     @Size(max = 50, message = "Please enter a first name between 1 and 50 characters")
     private String firstName;
 	
+    @Pattern(regexp = "^[A-Za-z0-9 '/&#,.-]*$", message = "The only special characters allowed are: +@'/&#,.-")
     @NotBlank(message = "Please provide a last name")
     @Size(max = 50, message = "Please enter a last name between 1 and 50 characters")
     private String lastName;
 	
-    @NotBlank(message = "Please provide a street address")
+    @Pattern(regexp = "^[A-Za-z0-9 '/&#,.-]*$", message = "The only special characters allowed are: +@'/&#,.-")
+    //@NotBlank(message = "Please provide a street address")
     @Size(max = 80, message = "Please enter a street address between 1 and 80 characters")
     private String street1;
 	
+    @Pattern(regexp = "^[A-Za-z0-9 '/&#,.-]*$", message = "The only special characters allowed are: +@'/&#,.-")
     @Size(max = 80, message = "Please enter a street address 2 between 1 and 80 characters")
     private String street2;
 	
-    @NotBlank(message = "Please provide a city")
+    @Pattern(regexp = "^[A-Za-z0-9 '/&#,.-]*$", message = "The only special characters allowed are: +@'/&#,.-")
+    //@NotBlank(message = "Please provide a city")
     @Size(max = 50, message = "Please enter a city between 1 and 50 characters")
     private String city;
 	
-    @NotBlank(message = "Please provide a state")
+    @Pattern(regexp = "^[A-Za-z]*$", message = "Only letters allowed for state")
+    //@NotBlank(message = "Please provide a state")
     @Size(max = 2, message = "Please enter a two-letter abbreviation for the state")
     private String state;
 	
-    @NotBlank(message = "Please provide a zip code")
-    @Size(max = 15, message = "Please enter a zip code that does not exceed 15 characters")
+    @Pattern(regexp = "^[A-Za-z0-9 -]*$", message = "Only numbers, letters, and dashes allowed for postal code")
+    //@NotBlank(message = "Please provide a postal code")
+    @Size(max = 15, message = "Please enter a postal code that does not exceed 15 characters")
     private String zip;
 	
     @NotBlank(message = "Please provide an email address")
     @Email(message = "Please provide a valid email address")
     private String email;
 	
+    @Pattern(regexp = "^[A-Za-z0-9 +()-]*$", message = "Please enter a valid phone number")
     @NotBlank(message = "Please provide a phone number")
     @Size(max = 15, message = "Please enter a phone number that does not exceed 15 characters")
     private String phoneNumber;
 	
-    @NotBlank(message = "Please provide a country")
+    @Pattern(regexp = "^[A-Za-z]*$", message = "Only letters allowed for country")
+    //@NotBlank(message = "Please provide a country")
     @Size(max = 2, message = "Please enter a two-digit abbreviation for country")
     private String country;
 	
+    @Pattern(regexp = "^[A-Za-z0-9 /]*$", message = "Only letters, numbers, and slashes allowed for timezone")
     @Size(max = 40, message = "Time zone cannot be more than 40 characters")
     private String timezone;
 	
@@ -134,12 +146,10 @@ public class User extends BaseUser implements UserDetails {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-	
     
     public String getPassword() {
         return password;
     }
-
 
     public void setPassword(String password) {
         this.password = password;
