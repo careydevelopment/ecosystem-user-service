@@ -36,7 +36,7 @@ import com.careydevelopment.ecosystem.user.util.UserFileUtil;
 import us.careydevelopment.ecosystem.file.exception.FileTooLargeException;
 import us.careydevelopment.ecosystem.file.exception.MissingFileException;
 import us.careydevelopment.ecosystem.jwt.constants.CookieConstants;
-import us.careydevelopment.util.api.util.InputSanitizer;
+import us.careydevelopment.util.api.input.InputSanitizer;
 
 @RestController
 public class UserController {

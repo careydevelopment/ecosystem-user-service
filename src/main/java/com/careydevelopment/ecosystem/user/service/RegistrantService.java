@@ -7,10 +7,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.careydevelopment.ecosystem.user.exception.InvalidRegistrantRequestException;
+import com.careydevelopment.ecosystem.user.exception.UserSaveFailedException;
 import com.careydevelopment.ecosystem.user.model.Registrant;
 import com.careydevelopment.ecosystem.user.model.RegistrantAuthentication;
 import com.careydevelopment.ecosystem.user.model.User;
@@ -21,7 +24,6 @@ import com.careydevelopment.ecosystem.user.util.TotpUtil;
 
 import us.careydevelopment.ecosystem.jwt.util.RecaptchaUtil;
 import us.careydevelopment.util.api.model.ValidationError;
-import us.careydevelopment.util.api.model.ValidationErrorResponse;
 import us.careydevelopment.util.date.DateConversionUtil;
 
 
@@ -33,6 +35,8 @@ public class RegistrantService {
     private static final int MAX_MINUTES_FOR_CODE = 5;
     private static final int MAX_FAILED_ATTEMPTS = 5;  
     
+    @Value("${recaptcha.active}")
+    private String recaptchaActive;
     
     @Autowired
     private UserService userService;
@@ -57,6 +61,7 @@ public class RegistrantService {
 
     @Autowired
     private SmsService smsService;
+    
     
     
     public void addAuthority(String username, String authority) {
@@ -188,9 +193,15 @@ public class RegistrantService {
     
     
     public User saveUser(Registrant registrant) {
-        User user = convertRegistrantToUser(registrant);
+        User savedUser = null;
         
-        User savedUser = userRepository.save(user);
+        try {
+            User user = convertRegistrantToUser(registrant);
+            savedUser = userRepository.save(user);
+        } catch (Exception e) {
+            throw new UserSaveFailedException(e.getMessage());
+        }
+        
         return savedUser;
     }
     
@@ -208,32 +219,37 @@ public class RegistrantService {
         return user;
     }
     
-    
-    public ValidationErrorResponse validateRegistrant(Registrant registrant, ValidationErrorResponse errorResponse) {
-        validateUniqueName(errorResponse, registrant);
-        validateUniqueEmail(errorResponse, registrant);
-        validateRecaptcha(errorResponse, registrant);
+    public void validateRegistrant(Registrant registrant, List<ValidationError> errors) {
+        validateUniqueName(errors, registrant);
+        validateUniqueEmail(errors, registrant);
+        validateRecaptcha(errors, registrant);
         
-        return errorResponse;
+        LOG.debug("validation is " + errors);
+        
+        if (errors.size() > 0) {
+            throw new InvalidRegistrantRequestException(errors);
+        }
     }    
     
     
-    private void validateRecaptcha(ValidationErrorResponse errorResponse, Registrant registrant) {
-        try {
-            float score = recaptchaUtil.createAssessment(registrant.getRecaptchaResponse());
-            
-            if (score < RecaptchaUtil.RECAPTCHA_MIN_SCORE) {
-                //user-friendly error message not necessary if a bot is trying to get in
-                addError(errorResponse, "Google thinks you're a bot", null, null);
-            }
-        } catch (IOException e) {
-            LOG.error("Problem validating recaptcha!", e);
-            throw new ServiceException("Problem validating recaptcha!", HttpStatus.INTERNAL_SERVER_ERROR.value());
+    private void validateRecaptcha(List<ValidationError> errors, Registrant registrant) {
+        if (!StringUtils.isBlank(recaptchaActive) && !recaptchaActive.equalsIgnoreCase("false")) {
+            try {
+                float score = recaptchaUtil.createAssessment(registrant.getRecaptchaResponse());
+                
+                if (score < RecaptchaUtil.RECAPTCHA_MIN_SCORE) {
+                    //user-friendly error message not necessary if a bot is trying to get in
+                    addError(errors, "Google thinks you're a bot", null, null);
+                }
+            } catch (IOException e) {
+                LOG.error("Problem validating recaptcha!", e);
+                throw new ServiceException("Problem validating recaptcha!", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            }    
         }
     }
     
     
-    private void validateUniqueName(ValidationErrorResponse errorResponse, Registrant registrant) {
+    private void validateUniqueName(List<ValidationError> errors, Registrant registrant) {
         String username = registrant.getUsername();
         
         if (!StringUtils.isBlank(username)) {
@@ -242,13 +258,13 @@ public class RegistrantService {
             
             List<User> users = userService.search(searchCriteria);
             if (users.size() > 0) {
-                addError(errorResponse, "Username is taken", "username", "usernameTaken");
+                addError(errors, "Username is taken", "username", "usernameTaken");
             }
         }
     }
     
     
-    private void validateUniqueEmail(ValidationErrorResponse errorResponse, Registrant registrant) {
+    private void validateUniqueEmail(List<ValidationError> errors, Registrant registrant) {
         String email = registrant.getEmailAddress();
         
         if (!StringUtils.isBlank(email)) {
@@ -257,18 +273,18 @@ public class RegistrantService {
             
             List<User> users = userService.search(searchCriteria);
             if (users.size() > 0) {
-                addError(errorResponse, "Email address is taken", "emailAddress", "emailTaken");
+                addError(errors, "Email address is taken", "emailAddress", "emailTaken");
             }
         }
     }
     
     
-    private void addError(ValidationErrorResponse errorResponse, String errorMessage, String field, String code) {        
+    private void addError(List<ValidationError> errors, String errorMessage, String field, String code) {        
         ValidationError validationError = new ValidationError();
         validationError.setCode(code);
         validationError.setDefaultMessage(errorMessage);
         validationError.setField(field);
         
-        errorResponse.getErrors().add(validationError);
+        errors.add(validationError);
     }
 }
