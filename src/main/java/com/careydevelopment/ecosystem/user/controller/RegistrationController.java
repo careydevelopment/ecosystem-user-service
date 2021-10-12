@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.careydevelopment.ecosystem.user.exception.EmailCodeCreateFailedException;
 import com.careydevelopment.ecosystem.user.exception.InvalidRegistrantRequestException;
+import com.careydevelopment.ecosystem.user.exception.UserSaveFailedException;
 import com.careydevelopment.ecosystem.user.model.Registrant;
 import com.careydevelopment.ecosystem.user.model.RegistrantAuthentication;
 import com.careydevelopment.ecosystem.user.model.User;
@@ -85,6 +87,16 @@ public class RegistrationController {
         return ResponseEntityUtil.createResponseEntityWithValidationErrors(errors);
     }
     
+    @ExceptionHandler(UserSaveFailedException.class)
+    public ResponseEntity<IRestResponse<Void>> userSaveFailed() {
+        return ResponseEntityUtil.createResponseEntityWithError("User save failed!", HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    @ExceptionHandler(EmailCodeCreateFailedException.class)
+    public ResponseEntity<IRestResponse<Void>> emailCodeCreateFailed() {
+        return ResponseEntityUtil.createResponseEntityWithError("Email code create failed!", HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+    
     @PostMapping("/")
     public ResponseEntity<IRestResponse<User>> createUser(@Valid @RequestBody Registrant registrant, BindingResult bindingResult) {
         LOG.debug("Registrant is " + registrant);
@@ -96,7 +108,7 @@ public class RegistrationController {
         
         User savedUser = registrantService.saveUser(registrant);
             
-            //registrantService.createEmailCode(registrant);
+        registrantService.createEmailCode(registrant);
             
         return ResponseEntityUtil.createSuccessfulResponseEntity("Successfully registered!", HttpStatus.CREATED.value(), savedUser);
     }
