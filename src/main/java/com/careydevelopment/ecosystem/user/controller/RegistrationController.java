@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.careydevelopment.ecosystem.user.exception.EmailCodeCreateFailedException;
 import com.careydevelopment.ecosystem.user.exception.InvalidRegistrantRequestException;
+import com.careydevelopment.ecosystem.user.exception.TextCodeCreateFailedException;
 import com.careydevelopment.ecosystem.user.exception.UserSaveFailedException;
 import com.careydevelopment.ecosystem.user.model.Registrant;
 import com.careydevelopment.ecosystem.user.model.RegistrantAuthentication;
@@ -36,80 +37,89 @@ import us.careydevelopment.util.api.validation.ValidationUtil;
 public class RegistrationController {
 
     private static final Logger LOG = LoggerFactory.getLogger(RegistrationController.class);
-    
-    
+
     @Autowired
     private RegistrantService registrantService;
-    
+
     @Autowired
     private RegistrantAuthenticationRepository registrantAuthenticationRepository;
-    
-    
+
+    @ExceptionHandler(InvalidRegistrantRequestException.class)
+    public ResponseEntity<IRestResponse<List<ValidationError>>> invalidRegistrant(
+            InvalidRegistrantRequestException ex) {
+        List<ValidationError> errors = ex.getErrors();
+        return ResponseEntityUtil.createResponseEntityWithValidationErrors(errors);
+    }
+
+    @ExceptionHandler(UserSaveFailedException.class)
+    public ResponseEntity<IRestResponse<Void>> userSaveFailed() {
+        return ResponseEntityUtil.createResponseEntityWithError("User save failed!",
+                HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    @ExceptionHandler(EmailCodeCreateFailedException.class)
+    public ResponseEntity<IRestResponse<Void>> emailCodeCreateFailed() {
+        return ResponseEntityUtil.createResponseEntityWithError("Email code create failed!",
+                HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    @ExceptionHandler(TextCodeCreateFailedException.class)
+    public ResponseEntity<IRestResponse<Void>> textCodeCreateFailed() {
+        return ResponseEntityUtil.createResponseEntityWithError("Text code create failed!",
+                HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
     @GetMapping("/emailVerificationStatus")
     public ResponseEntity<?> getEmailVerificationStatus(@RequestParam String username, @RequestParam String code) {
         LOG.debug("Checking email verification for user " + username + " with code " + code);
 
         boolean verified = registrantService.validateEmailCode(username, code);
-        
+
         if (verified) {
             registrantService.createTextCode(username);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
-        
+
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
-    
-    
+
     @GetMapping("/smsVerificationStatus")
     public ResponseEntity<?> getSmsVerificationStatus(@RequestParam String username, @RequestParam String code) {
         LOG.debug("Checking SMS verification for user " + username + " with code " + code);
 
-        List<RegistrantAuthentication> auths = registrantAuthenticationRepository.findByUsernameAndTypeOrderByTimeDesc(username, RegistrantAuthentication.Type.TEXT.toString());
-        
+        List<RegistrantAuthentication> auths = registrantAuthenticationRepository
+                .findByUsernameAndTypeOrderByTimeDesc(username, RegistrantAuthentication.Type.TEXT.toString());
+
         if (auths != null && auths.size() > 0) {
-            //most recent persisted record will be the latest SMS record
+            // most recent persisted record will be the latest SMS record
             RegistrantAuthentication auth = auths.get(0);
-            
+
             boolean verified = registrantService.validateTextCode(auth, code);
-            
+
             if (verified) {
                 registrantService.addAuthority(username, Authority.BASIC_ECOSYSTEM_USER);
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
             }
         }
-        
+
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
-    
-    @ExceptionHandler(InvalidRegistrantRequestException.class)
-    public ResponseEntity<IRestResponse<List<ValidationError>>> invalidRegistrant(InvalidRegistrantRequestException ex) {
-        List<ValidationError> errors = ex.getErrors();
-        return ResponseEntityUtil.createResponseEntityWithValidationErrors(errors);
-    }
-    
-    @ExceptionHandler(UserSaveFailedException.class)
-    public ResponseEntity<IRestResponse<Void>> userSaveFailed() {
-        return ResponseEntityUtil.createResponseEntityWithError("User save failed!", HttpStatus.INTERNAL_SERVER_ERROR.value());
-    }
 
-    @ExceptionHandler(EmailCodeCreateFailedException.class)
-    public ResponseEntity<IRestResponse<Void>> emailCodeCreateFailed() {
-        return ResponseEntityUtil.createResponseEntityWithError("Email code create failed!", HttpStatus.INTERNAL_SERVER_ERROR.value());
-    }
-    
     @PostMapping("/")
-    public ResponseEntity<IRestResponse<User>> createUser(@Valid @RequestBody Registrant registrant, BindingResult bindingResult) {
+    public ResponseEntity<IRestResponse<User>> createUser(@Valid @RequestBody Registrant registrant,
+            BindingResult bindingResult) {
         LOG.debug("Registrant is " + registrant);
-        
+
         List<ValidationError> validationErrors = ValidationUtil.convertBindingResultToValidationErrors(bindingResult);
-        
-        //look for any validations not caught by JSR 380
+
+        // look for any validations not caught by JSR 380
         registrantService.validateRegistrant(registrant, validationErrors);
-        
+
         User savedUser = registrantService.saveUser(registrant);
-            
+
         registrantService.createEmailCode(registrant);
-            
-        return ResponseEntityUtil.createSuccessfulResponseEntity("Successfully registered!", HttpStatus.CREATED.value(), savedUser);
+
+        return ResponseEntityUtil.createSuccessfulResponseEntity("Successfully registered!", HttpStatus.CREATED.value(),
+                savedUser);
     }
 }

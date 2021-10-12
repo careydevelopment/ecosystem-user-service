@@ -8,11 +8,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.careydevelopment.ecosystem.user.exception.EmailCodeCreateFailedException;
 import com.careydevelopment.ecosystem.user.exception.InvalidRegistrantRequestException;
+import com.careydevelopment.ecosystem.user.exception.ServiceException;
+import com.careydevelopment.ecosystem.user.exception.TextCodeCreateFailedException;
 import com.careydevelopment.ecosystem.user.exception.UserSaveFailedException;
 import com.careydevelopment.ecosystem.user.model.Registrant;
 import com.careydevelopment.ecosystem.user.model.RegistrantAuthentication;
@@ -63,11 +64,16 @@ public class RegistrantService {
     private UserUtil userUtil;
     
     public void addAuthority(String username, String authority) {
-        User user = userRepository.findByUsername(username);
-
-        if (user != null) {
-            user.getAuthorityNames().add(authority);
-            userRepository.save(user);
+        try {
+            User user = userRepository.findByUsername(username);
+    
+            if (user != null) {
+                user.getAuthorityNames().add(authority);
+                userRepository.save(user);
+            }
+        } catch (Exception e) {
+            LOG.error("Problem adding authority!", e);
+            throw new ServiceException("Problem adding authority!");
         }
     }
 
@@ -75,16 +81,21 @@ public class RegistrantService {
         boolean verified = false;
         LOG.debug("Failed attempts for " + auth.getUsername() + " is " + auth.getFailedAttempts());
 
-        if (auth.getFailedAttempts() < MAX_FAILED_ATTEMPTS) {
-            String requestId = auth.getRequestId();
-            verified = smsService.checkValidationCode(requestId, code);
-
-            if (!verified) {
-                auth.setFailedAttempts(auth.getFailedAttempts() + 1);
-                registrantAuthenticationRepository.save(auth);
+        try {
+            if (auth.getFailedAttempts() < MAX_FAILED_ATTEMPTS) {
+                String requestId = auth.getRequestId();
+                verified = smsService.checkValidationCode(requestId, code);
+    
+                if (!verified) {
+                    auth.setFailedAttempts(auth.getFailedAttempts() + 1);
+                    registrantAuthenticationRepository.save(auth);
+                }
             }
+        } catch (Exception e) {
+            LOG.error("Problem validating text code!", e);
+            throw new ServiceException("Problem validating text code!");
         }
-
+        
         return verified;
     }
 
@@ -101,6 +112,7 @@ public class RegistrantService {
                 return false;
             }
         } else {
+            LOG.debug("User " + username + " exceeded max attempts to validate the email code");
             return false;
         }
     }
@@ -135,13 +147,19 @@ public class RegistrantService {
 
     public List<RegistrantAuthentication> validateCode(String username, String code,
             RegistrantAuthentication.Type type) {
-        long time = System.currentTimeMillis()
-                - (DateConversionUtil.NUMBER_OF_MILLISECONDS_IN_MINUTE * MAX_MINUTES_FOR_CODE);
-
-        List<RegistrantAuthentication> auths = registrantAuthenticationRepository.codeCheck(username, time,
-                type.toString(), code);
-
-        return auths;
+        
+        try {
+            long time = System.currentTimeMillis()
+                    - (DateConversionUtil.NUMBER_OF_MILLISECONDS_IN_MINUTE * MAX_MINUTES_FOR_CODE);
+    
+            List<RegistrantAuthentication> auths = registrantAuthenticationRepository.codeCheck(username, time,
+                    type.toString(), code);
+    
+            return auths;
+        } catch (Exception e) {
+            LOG.error("Problem validating verification code!", e);
+            throw new ServiceException("Problem validating verification code!");
+        }
     }
 
     public void createTextCode(String username) {
@@ -149,16 +167,24 @@ public class RegistrantService {
         LOG.debug("Found user is " + user);
 
         if (user != null) {
-            String requestId = smsService.sendValidationCode(user.getPhoneNumber());
-
-            if (requestId != null) {
-                RegistrantAuthentication auth = new RegistrantAuthentication();
-                auth.setUsername(username);
-                auth.setTime(System.currentTimeMillis());
-                auth.setType(RegistrantAuthentication.Type.TEXT);
-                auth.setRequestId(requestId);
-
-                registrantAuthenticationRepository.save(auth);
+            try {
+                String requestId = smsService.sendValidationCode(user.getPhoneNumber());
+    
+                if (requestId != null) {
+                    RegistrantAuthentication auth = new RegistrantAuthentication();
+                    auth.setUsername(username);
+                    auth.setTime(System.currentTimeMillis());
+                    auth.setType(RegistrantAuthentication.Type.TEXT);
+                    auth.setRequestId(requestId);
+    
+                    registrantAuthenticationRepository.save(auth);
+                } else {
+                    LOG.error("Unable to create text code as user " + username + " doesn't exist");
+                    throw new TextCodeCreateFailedException("User " + username + " doesn't exist");
+                }
+            } catch (Exception e) {
+                LOG.error("Problem creating text code!", e);
+                throw new TextCodeCreateFailedException(e.getMessage());
             }
         }
     }
@@ -177,7 +203,7 @@ public class RegistrantService {
         }
     }
 
-    public String createCode(String username, RegistrantAuthentication.Type type) {
+    private String createCode(String username, RegistrantAuthentication.Type type) {
         RegistrantAuthentication auth = new RegistrantAuthentication();
         auth.setUsername(username);
         auth.setTime(System.currentTimeMillis());
@@ -206,29 +232,29 @@ public class RegistrantService {
     }
 
     public void validateRegistrant(Registrant registrant, List<ValidationError> errors) {
-        validateUniqueName(errors, registrant);
-        validateUniqueEmail(errors, registrant);
-        validateRecaptcha(errors, registrant);
-
-        LOG.debug("validation is " + errors);
-
-        if (errors.size() > 0) {
-            throw new InvalidRegistrantRequestException(errors);
+        try {
+            validateUniqueName(errors, registrant);
+            validateUniqueEmail(errors, registrant);
+            validateRecaptcha(errors, registrant);
+    
+            LOG.debug("validation is " + errors);
+    
+            if (errors.size() > 0) {
+                throw new InvalidRegistrantRequestException(errors);
+            }
+        } catch (Exception e) {
+            LOG.error("Problem validating registrant!", e);
+            throw new ServiceException("Problem validating registrant!");
         }
     }
 
-    private void validateRecaptcha(List<ValidationError> errors, Registrant registrant) {
+    private void validateRecaptcha(List<ValidationError> errors, Registrant registrant) throws IOException {
         if (!StringUtils.isBlank(recaptchaActive) && !recaptchaActive.equalsIgnoreCase("false")) {
-            try {
-                float score = recaptchaUtil.createAssessment(registrant.getRecaptchaResponse());
+            float score = recaptchaUtil.createAssessment(registrant.getRecaptchaResponse());
 
-                if (score < RecaptchaUtil.RECAPTCHA_MIN_SCORE) {
-                    // user-friendly error message not necessary if a bot is trying to get in
-                    addError(errors, "Google thinks you're a bot", null, null);
-                }
-            } catch (IOException e) {
-                LOG.error("Problem validating recaptcha!", e);
-                throw new ServiceException("Problem validating recaptcha!", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            if (score < RecaptchaUtil.RECAPTCHA_MIN_SCORE) {
+                // user-friendly error message not necessary if a bot is trying to get in
+                addError(errors, "Google thinks you're a bot", null, null);
             }
         }
     }
