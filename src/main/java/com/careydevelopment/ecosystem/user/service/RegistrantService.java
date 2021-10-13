@@ -26,6 +26,7 @@ import com.careydevelopment.ecosystem.user.util.UserUtil;
 
 import us.careydevelopment.ecosystem.jwt.util.RecaptchaUtil;
 import us.careydevelopment.util.api.model.ValidationError;
+import us.careydevelopment.util.api.validation.ValidationUtil;
 import us.careydevelopment.util.date.DateConversionUtil;
 
 @Service
@@ -100,20 +101,25 @@ public class RegistrantService {
     }
 
     public boolean validateEmailCode(String username, String code) {
-        int previousAttempts = getPreviousAttempts(username, RegistrantAuthentication.Type.EMAIL);
-
-        if (previousAttempts < MAX_FAILED_ATTEMPTS) {
-            List<RegistrantAuthentication> list = validateCode(username, code, RegistrantAuthentication.Type.EMAIL);
-
-            if (list != null && list.size() > 0) {
-                return true;
+        try {
+            int previousAttempts = getPreviousAttempts(username, RegistrantAuthentication.Type.EMAIL);
+    
+            if (previousAttempts < MAX_FAILED_ATTEMPTS) {
+                List<RegistrantAuthentication> list = validateCode(username, code, RegistrantAuthentication.Type.EMAIL);
+    
+                if (list != null && list.size() > 0) {
+                    return true;
+                } else {
+                    incrementFailedAttempts(username, RegistrantAuthentication.Type.EMAIL);
+                    return false;
+                }
             } else {
-                incrementFailedAttempts(username, RegistrantAuthentication.Type.EMAIL);
+                LOG.debug("User " + username + " exceeded max attempts to validate the email code");
                 return false;
             }
-        } else {
-            LOG.debug("User " + username + " exceeded max attempts to validate the email code");
-            return false;
+        } catch (Exception e) {
+            LOG.error("Problem validating email code!", e);
+            throw new ServiceException("Problem validating email code!");
         }
     }
 
@@ -145,21 +151,16 @@ public class RegistrantService {
         }
     }
 
-    public List<RegistrantAuthentication> validateCode(String username, String code,
+    private List<RegistrantAuthentication> validateCode(String username, String code,
             RegistrantAuthentication.Type type) {
 
-        try {
-            long time = System.currentTimeMillis()
-                    - (DateConversionUtil.NUMBER_OF_MILLISECONDS_IN_MINUTE * MAX_MINUTES_FOR_CODE);
+        long time = System.currentTimeMillis()
+                - (DateConversionUtil.NUMBER_OF_MILLISECONDS_IN_MINUTE * MAX_MINUTES_FOR_CODE);
 
-            List<RegistrantAuthentication> auths = registrantAuthenticationRepository.codeCheck(username, time,
-                    type.toString(), code);
+        List<RegistrantAuthentication> auths = registrantAuthenticationRepository.codeCheck(username, time,
+                type.toString(), code);
 
-            return auths;
-        } catch (Exception e) {
-            LOG.error("Problem validating verification code!", e);
-            throw new ServiceException("Problem validating verification code!");
-        }
+        return auths;
     }
 
     public void createTextCode(String username) {
@@ -232,29 +233,32 @@ public class RegistrantService {
     }
 
     public void validateRegistrant(Registrant registrant, List<ValidationError> errors) {
+        handleRemainingValidations(registrant, errors);
+        LOG.debug("validation is " + errors);
+
+        if (errors.size() > 0) {
+            throw new InvalidRegistrantRequestException(errors);
+        }
+    }
+
+    private void handleRemainingValidations(Registrant registrant, List<ValidationError> errors) {
         try {
             validateUniqueName(errors, registrant);
             validateUniqueEmail(errors, registrant);
             validateRecaptcha(errors, registrant);
-
-            LOG.debug("validation is " + errors);
-
-            if (errors.size() > 0) {
-                throw new InvalidRegistrantRequestException(errors);
-            }
         } catch (Exception e) {
             LOG.error("Problem validating registrant!", e);
             throw new ServiceException("Problem validating registrant!");
         }
     }
-
+    
     private void validateRecaptcha(List<ValidationError> errors, Registrant registrant) throws IOException {
         if (!StringUtils.isBlank(recaptchaActive) && !recaptchaActive.equalsIgnoreCase("false")) {
             float score = recaptchaUtil.createAssessment(registrant.getRecaptchaResponse());
 
             if (score < RecaptchaUtil.RECAPTCHA_MIN_SCORE) {
                 // user-friendly error message not necessary if a bot is trying to get in
-                addError(errors, "Google thinks you're a bot", null, null);
+                ValidationUtil.addError(errors, "Google thinks you're a bot", null, null);
             }
         }
     }
@@ -268,7 +272,7 @@ public class RegistrantService {
 
             List<User> users = userService.search(searchCriteria);
             if (users.size() > 0) {
-                addError(errors, "Username is taken", "username", "usernameTaken");
+                ValidationUtil.addError(errors, "Username is taken", "username", "usernameTaken");
             }
         }
     }
@@ -282,17 +286,8 @@ public class RegistrantService {
 
             List<User> users = userService.search(searchCriteria);
             if (users.size() > 0) {
-                addError(errors, "Email address is taken", "emailAddress", "emailTaken");
+                ValidationUtil.addError(errors, "Email address is taken", "emailAddress", "emailTaken");
             }
         }
-    }
-
-    private void addError(List<ValidationError> errors, String errorMessage, String field, String code) {
-        ValidationError validationError = new ValidationError();
-        validationError.setCode(code);
-        validationError.setDefaultMessage(errorMessage);
-        validationError.setField(field);
-
-        errors.add(validationError);
     }
 }

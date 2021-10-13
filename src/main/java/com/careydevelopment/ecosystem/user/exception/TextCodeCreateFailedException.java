@@ -1,6 +1,6 @@
 package com.careydevelopment.ecosystem.user.exception;
 
-public class TextCodeCreateFailedException extends ServiceException {
+public class TextCodeCreateFailedException extends RuntimeException {
 
     private static final long serialVersionUID = -460034748688687252L;
 
