@@ -27,93 +27,89 @@ public class UserService extends JwtUserDetailsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
 
-    
     @Autowired
     private SecurityUtil securityUtil;
-    
+
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    
     public UserService(@Autowired UserRepository userRepository) {
         this.userDetailsRepository = userRepository;
     }
-    
-    
+
     public User updateUser(User user) {
         addExcludedFields(user);
-        User updatedUser = ((UserRepository)userDetailsRepository).save(user);
-        
+        User updatedUser = ((UserRepository) userDetailsRepository).save(user);
+
         return updatedUser;
     }
-    
-    
+
     private void addExcludedFields(User user) {
         User currentUser = securityUtil.getCurrentUser();
-        
+
         user.setPassword(currentUser.getPassword());
         user.setAuthorityNames(currentUser.getAuthorityNames());
     }
-    
-    
+
     public void updateFailedLoginAttempts(String username) {
         try {
             UserDetails userDetails = loadUserByUsername(username);
-            User user = (User)userDetails;
-            
+            User user = (User) userDetails;
+
             Integer failedLoginAttempts = user.getFailedLoginAttempts();
             if (failedLoginAttempts == null) {
                 failedLoginAttempts = 1;
             } else {
                 failedLoginAttempts++;
             }
-            
+
             user.setFailedLoginAttempts(failedLoginAttempts);
             user.setLastFailedLoginTime(System.currentTimeMillis());
-            
-            ((UserRepository)userDetailsRepository).save(user);
+
+            ((UserRepository) userDetailsRepository).save(user);
         } catch (UsernameNotFoundException e) {
             LOG.error("Problem attempting to update failed login attempts!", e);
         }
     }
-    
-    
+
     public void successfulLogin(String username) {
         resetFailedLoginAttempts(username);
     }
-    
-    
+
     private void resetFailedLoginAttempts(String username) {
         UserDetails userDetails = loadUserByUsername(username);
-        User user = (User)userDetails;
-        
+        User user = (User) userDetails;
+
         Integer failedLoginAttempts = user.getFailedLoginAttempts();
         if (failedLoginAttempts != null) {
             user.setFailedLoginAttempts(null);
-            ((UserRepository)userDetailsRepository).save(user);
+            ((UserRepository) userDetailsRepository).save(user);
         }
     }
-    
-    
+
     public List<User> search(UserSearchCriteria searchCriteria) {
         List<AggregationOperation> ops = new ArrayList<>();
-        
-        if (StringUtils.isBlank(searchCriteria.getEmailAddress()) && StringUtils.isBlank(searchCriteria.getUsername())) {
+
+        if (StringUtils.isBlank(searchCriteria.getEmailAddress())
+                && StringUtils.isBlank(searchCriteria.getUsername())) {
             return new ArrayList<>();
         }
-        
+
         if (!StringUtils.isBlank(searchCriteria.getEmailAddress())) {
-            AggregationOperation emailMatch = Aggregation.match(Criteria.where("email").is(searchCriteria.getEmailAddress()));
+            AggregationOperation emailMatch = Aggregation
+                    .match(Criteria.where("email").is(searchCriteria.getEmailAddress()));
             ops.add(emailMatch);
         }
-        
+
         if (!StringUtils.isBlank(searchCriteria.getUsername())) {
-            AggregationOperation usernameMatch = Aggregation.match(Criteria.where("username").is(searchCriteria.getUsername()));
+            AggregationOperation usernameMatch = Aggregation
+                    .match(Criteria.where("username").is(searchCriteria.getUsername()));
             ops.add(usernameMatch);
         }
-                
+
         Aggregation aggregation = Aggregation.newAggregation(ops);
-        List<User> users = mongoTemplate.aggregate(aggregation, mongoTemplate.getCollectionName(User.class), User.class).getMappedResults();
+        List<User> users = mongoTemplate.aggregate(aggregation, mongoTemplate.getCollectionName(User.class), User.class)
+                .getMappedResults();
 
         return users;
     }

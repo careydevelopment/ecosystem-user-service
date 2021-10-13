@@ -9,7 +9,7 @@ import com.careydevelopment.ecosystem.user.model.User;
 
 @Component
 public class UserUtil {
-    
+
     @Autowired
     private PasswordEncoder encoder;
 

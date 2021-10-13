@@ -7,7 +7,7 @@ import us.careydevelopment.ecosystem.jwt.util.JwtTokenUtil;
 
 @Component
 public class JwtUtil extends JwtTokenUtil {
-    
+
     public JwtUtil(@Value("${jwt.secret}") String secret) {
         this.jwtSecret = secret;
     }

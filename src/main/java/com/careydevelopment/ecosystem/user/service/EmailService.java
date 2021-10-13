@@ -25,8 +25,8 @@ public class EmailService {
     @Autowired
     private JavaMailSender emailSender;
 
-    //@Value("classpath:/mail-logo.png")
-    //private Resource resourceFile;
+    // @Value("classpath:/mail-logo.png")
+    // private Resource resourceFile;
 
     public void sendSimpleMessage(String to, String subject, String text) {
         try {
@@ -37,14 +37,13 @@ public class EmailService {
             message.setText(text);
 
             LOG.debug("Sending email " + message);
-            
+
             emailSender.send(message);
         } catch (MailException exception) {
             LOG.error("Problem sending email", exception);
         }
     }
 
-    
     public void sendSimpleMessage(String from, String to, String subject, String text) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
@@ -53,7 +52,6 @@ public class EmailService {
             message.setSubject(subject);
             message.setText(text);
 
-
             LOG.debug("Sending email " + message);
 
             emailSender.send(message);
@@ -61,8 +59,7 @@ public class EmailService {
             LOG.error("Problem sending email", exception);
         }
     }
-    
-    
+
 //    public void sendSimpleMessageUsingTemplate(String to,
 //                                               String subject,
 //                                               String ...templateModel) {
@@ -70,11 +67,7 @@ public class EmailService {
 //        sendSimpleMessage(to, subject, text);
 //    }
 
-    
-    public void sendMessageWithAttachment(String to,
-                                          String subject,
-                                          String text,
-                                          String pathToAttachment) {
+    public void sendMessageWithAttachment(String to, String subject, String text, String pathToAttachment) {
         try {
             MimeMessage message = emailSender.createMimeMessage();
             // pass 'true' to the constructor to create a multipart message
@@ -93,7 +86,6 @@ public class EmailService {
             LOG.error("Problem sending email", e);
         }
     }
-    
 
 //    public void sendMessageUsingThymeleafTemplate(
 //        String to, String subject, Map<String, Object> templateModel)
@@ -107,7 +99,6 @@ public class EmailService {
 //        sendHtmlMessage(to, subject, htmlBody);
 //    }
 
-    
     private void sendHtmlMessage(String to, String subject, String htmlBody) throws MessagingException {
 
         MimeMessage message = emailSender.createMimeMessage();
@@ -116,7 +107,7 @@ public class EmailService {
         helper.setTo(to);
         helper.setSubject(subject);
         helper.setText(htmlBody, true);
-        //helper.addInline("attachment.png", resourceFile);
+        // helper.addInline("attachment.png", resourceFile);
         emailSender.send(message);
     }
 }

@@ -16,20 +16,18 @@ public class ServerSetup {
 
     @Value("${ajp.port}")
     int ajpPort;
- 
+
     @Value("${ajp.enabled}")
     boolean ajpEnabled;
-    
-    
+
     @Bean
     public Validator validator() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
-        
+
         return validator;
     }
-    
-    
+
     @Bean
     public TomcatServletWebServerFactory servletContainer() {
         TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory();
@@ -40,10 +38,10 @@ public class ServerSetup {
             ajpConnector.setSecure(false);
             ajpConnector.setAllowTrace(false);
             ajpConnector.setScheme("https");
-            
+
             ((AbstractAjpProtocol) ajpConnector.getProtocolHandler()).setSecretRequired(false);
-            
-            tomcat.addAdditionalTomcatConnectors(ajpConnector);            
+
+            tomcat.addAdditionalTomcatConnectors(ajpConnector);
         }
 
         return tomcat;

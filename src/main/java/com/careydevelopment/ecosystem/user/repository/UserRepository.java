@@ -10,8 +10,8 @@ import us.careydevelopment.ecosystem.jwt.repository.UserDetailsRepository;
 @Repository
 public interface UserRepository extends MongoRepository<User, String>, UserDetailsRepository {
 
-	public User findByUsername(String username);
-	
-	public User findByEmail(String email);
-	
+    public User findByUsername(String username);
+
+    public User findByEmail(String email);
+
 }

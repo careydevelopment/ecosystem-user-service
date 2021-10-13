@@ -11,23 +11,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Registrant {
 
     @NotNull
-    @Size(min=1, max=32, message="First name must be between 1 and 32 characters")
+    @Size(min = 1, max = 32, message = "First name must be between 1 and 32 characters")
     private String firstName;
-    
+
     @NotNull
-    @Size(min=1, max=32, message="Last name must be between 1 and 32 characters")
+    @Size(min = 1, max = 32, message = "Last name must be between 1 and 32 characters")
     private String lastName;
-    
+
     @NotNull
-    @Size(min=5, max=12, message="Username must be between 5 and 12 characters")
+    @Size(min = 5, max = 12, message = "Username must be between 5 and 12 characters")
     private String username;
-    
+
     @NotNull
-    @Size(min=8, max=20, message="Password must be between 8 and 20 characters")
+    @Size(min = 8, max = 20, message = "Password must be between 8 and 20 characters")
     private String password;
-    
+
     @NotNull
-    @Pattern(regexp = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$", message="Email address is invalid")
+    @Pattern(regexp = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$", message = "Email address is invalid")
     private String emailAddress;
 
     @NotNull
@@ -35,8 +35,7 @@ public class Registrant {
 
     @JsonProperty("g-recaptcha-response")
     private String recaptchaResponse;
-    
-    
+
     public String getFirstName() {
         return firstName;
     }
@@ -76,7 +75,7 @@ public class Registrant {
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
     }
-    
+
     public String getPhone() {
         return phone;
     }
@@ -84,7 +83,7 @@ public class Registrant {
     public void setPhone(String phone) {
         this.phone = phone;
     }
-    
+
     public String getRecaptchaResponse() {
         return recaptchaResponse;
     }

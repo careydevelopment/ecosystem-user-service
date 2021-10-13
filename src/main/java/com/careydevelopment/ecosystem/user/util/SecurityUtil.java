@@ -12,21 +12,19 @@ import com.careydevelopment.ecosystem.user.model.User;
 public class SecurityUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(SecurityUtil.class);
-    
-    
+
     public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User)authentication.getPrincipal();
+        User user = (User) authentication.getPrincipal();
 
         return user;
     }
-    
-    
+
     public boolean isAuthorizedByUserId(String userId) {
         boolean authorized = false;
-        
+
         User user = getCurrentUser();
-        
+
         if (user != null && userId != null) {
             if (user.getId() != null) {
                 if (user.getId().equals(userId)) {
@@ -34,7 +32,7 @@ public class SecurityUtil {
                 }
             }
         }
-        
+
         return authorized;
     }
 }

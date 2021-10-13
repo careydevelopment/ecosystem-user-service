@@ -13,7 +13,7 @@ public class EmailIntegration {
     public void setIntegrationType(EmailIntegrationType integrationType) {
         this.integrationType = integrationType;
     }
-	
+
     public String toString() {
         return ReflectionToStringBuilder.toString(this);
     }

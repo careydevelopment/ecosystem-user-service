@@ -40,35 +40,30 @@ import us.careydevelopment.util.api.input.InputSanitizer;
 
 @RestController
 public class UserController {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
 
-    
     @Autowired
     private UserService userService;
-    
+
     @Autowired
     private UserFileUtil fileUtil;
-    
+
     @Autowired
     private SecurityUtil securityUtil;
-        
-    
+
     @GetMapping("/{userId}/profileImage")
-    public ResponseEntity<?> getProfileImage(@PathVariable String userId) {        
+    public ResponseEntity<?> getProfileImage(@PathVariable String userId) {
         try {
             Path imagePath = fileUtil.fetchProfilePhotoByUserId(userId);
-            
+
             if (imagePath != null) {
                 LOG.debug("Getting image from " + imagePath.toString());
-                
+
                 ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(imagePath));
-                
-                return ResponseEntity
-                        .ok()
-                        .contentLength(imagePath.toFile().length())
-                        .contentType(MediaType.IMAGE_JPEG)
-                        .body(resource);                    
+
+                return ResponseEntity.ok().contentLength(imagePath.toFile().length()).contentType(MediaType.IMAGE_JPEG)
+                        .body(resource);
             } else {
                 LOG.debug("Profile photo not found for user " + userId);
                 return ResponseEntity.status(HttpStatus.OK).build();
@@ -77,16 +72,15 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    
-    
+
     @PostMapping("/profileImage")
     public ResponseEntity<?> saveProfileImage(@RequestParam("file") MultipartFile file) {
         User user = securityUtil.getCurrentUser();
         LOG.debug("User uploading is " + user);
-        
+
         try {
             fileUtil.saveProfilePhoto(file, user);
-            
+
             return ResponseEntity.ok().build();
         } catch (FileTooLargeException fe) {
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
@@ -96,24 +90,24 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).build();
         }
     }
-    
-    
+
     @PutMapping("/{userId}")
-    public ResponseEntity<?> updateUser(@PathVariable String userId, @Valid @RequestBody User user, BindingResult bindingResult) {
+    public ResponseEntity<?> updateUser(@PathVariable String userId, @Valid @RequestBody User user,
+            BindingResult bindingResult) {
         boolean allowed = securityUtil.isAuthorizedByUserId(userId);
         LOG.debug("updated user data is " + user);
-        
+
         if (allowed) {
             if (bindingResult.hasErrors()) {
                 LOG.debug("Binding result: " + bindingResult);
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getAllErrors());
             } else {
                 InputSanitizer.sanitizeBasic(user);
-                
+
                 User updatedUser = userService.updateUser(user);
                 LOG.debug("updated user is " + updatedUser);
-                
-                return ResponseEntity.ok(updatedUser);    
+
+                return ResponseEntity.ok(updatedUser);
             }
         } else {
             LOG.debug("Not allowed to update user ID " + userId);
@@ -121,7 +115,6 @@ public class UserController {
         }
     }
 
-    
     @GetMapping("/me")
     public ResponseEntity<?> me() {
         try {
@@ -129,46 +122,45 @@ public class UserController {
             return ResponseEntity.ok(user);
         } catch (Exception e) {
             LOG.error("Problem retrieving current user!", e);
-             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
-    
-    
+
     @DeleteMapping("/session")
-    public ResponseEntity<?> logout(@CookieValue(name=CookieConstants.ACCESS_TOKEN_COOKIE_NAME, required=false) String jwtToken,
+    public ResponseEntity<?> logout(
+            @CookieValue(name = CookieConstants.ACCESS_TOKEN_COOKIE_NAME, required = false) String jwtToken,
             HttpServletResponse response) {
-        
+
         if (jwtToken != null) {
             expireCookie(response);
         }
-        
+
         return ResponseEntity.ok().build();
     }
-    
-    
+
     private void expireCookie(HttpServletResponse response) {
         final Cookie cookie = new Cookie(CookieConstants.ACCESS_TOKEN_COOKIE_NAME, "");
-        
-        cookie.setMaxAge(0) ;
+
+        cookie.setMaxAge(0);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setSecure(true);
-        
+
         response.addCookie(cookie);
     }
-    
-    
+
     @GetMapping("/simpleSearch")
-    public ResponseEntity<?> search(@RequestParam(required = false) String emailAddress, @RequestParam(required = false) String username) {
+    public ResponseEntity<?> search(@RequestParam(required = false) String emailAddress,
+            @RequestParam(required = false) String username) {
         UserSearchCriteria searchCriteria = new UserSearchCriteria();
         searchCriteria.setEmailAddress(emailAddress);
         searchCriteria.setUsername(username);
-        
+
         LOG.debug("Search criteria is " + searchCriteria);
-        
+
         List<User> users = userService.search(searchCriteria);
         LOG.debug("Returning users " + users);
-        
-        return ResponseEntity.ok(users);                
+
+        return ResponseEntity.ok(users);
     }
 }

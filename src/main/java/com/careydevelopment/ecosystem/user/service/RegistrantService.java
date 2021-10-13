@@ -62,11 +62,11 @@ public class RegistrantService {
 
     @Autowired
     private UserUtil userUtil;
-    
+
     public void addAuthority(String username, String authority) {
         try {
             User user = userRepository.findByUsername(username);
-    
+
             if (user != null) {
                 user.getAuthorityNames().add(authority);
                 userRepository.save(user);
@@ -85,7 +85,7 @@ public class RegistrantService {
             if (auth.getFailedAttempts() < MAX_FAILED_ATTEMPTS) {
                 String requestId = auth.getRequestId();
                 verified = smsService.checkValidationCode(requestId, code);
-    
+
                 if (!verified) {
                     auth.setFailedAttempts(auth.getFailedAttempts() + 1);
                     registrantAuthenticationRepository.save(auth);
@@ -95,7 +95,7 @@ public class RegistrantService {
             LOG.error("Problem validating text code!", e);
             throw new ServiceException("Problem validating text code!");
         }
-        
+
         return verified;
     }
 
@@ -147,14 +147,14 @@ public class RegistrantService {
 
     public List<RegistrantAuthentication> validateCode(String username, String code,
             RegistrantAuthentication.Type type) {
-        
+
         try {
             long time = System.currentTimeMillis()
                     - (DateConversionUtil.NUMBER_OF_MILLISECONDS_IN_MINUTE * MAX_MINUTES_FOR_CODE);
-    
+
             List<RegistrantAuthentication> auths = registrantAuthenticationRepository.codeCheck(username, time,
                     type.toString(), code);
-    
+
             return auths;
         } catch (Exception e) {
             LOG.error("Problem validating verification code!", e);
@@ -169,14 +169,14 @@ public class RegistrantService {
         if (user != null) {
             try {
                 String requestId = smsService.sendValidationCode(user.getPhoneNumber());
-    
+
                 if (requestId != null) {
                     RegistrantAuthentication auth = new RegistrantAuthentication();
                     auth.setUsername(username);
                     auth.setTime(System.currentTimeMillis());
                     auth.setType(RegistrantAuthentication.Type.TEXT);
                     auth.setRequestId(requestId);
-    
+
                     registrantAuthenticationRepository.save(auth);
                 } else {
                     LOG.error("Unable to create text code as user " + username + " doesn't exist");
@@ -236,9 +236,9 @@ public class RegistrantService {
             validateUniqueName(errors, registrant);
             validateUniqueEmail(errors, registrant);
             validateRecaptcha(errors, registrant);
-    
+
             LOG.debug("validation is " + errors);
-    
+
             if (errors.size() > 0) {
                 throw new InvalidRegistrantRequestException(errors);
             }
