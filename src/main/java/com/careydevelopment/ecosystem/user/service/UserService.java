@@ -2,6 +2,7 @@ package com.careydevelopment.ecosystem.user.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -15,10 +16,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.careydevelopment.ecosystem.user.exception.UserNotFoundException;
 import com.careydevelopment.ecosystem.user.model.User;
 import com.careydevelopment.ecosystem.user.model.UserSearchCriteria;
 import com.careydevelopment.ecosystem.user.repository.UserRepository;
-import com.careydevelopment.ecosystem.user.util.SecurityUtil;
 
 import us.careydevelopment.ecosystem.jwt.service.JwtUserDetailsService;
 
@@ -28,27 +29,38 @@ public class UserService extends JwtUserDetailsService {
     private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
 
     @Autowired
-    private SecurityUtil securityUtil;
-
-    @Autowired
     private MongoTemplate mongoTemplate;
-
+    
+    private UserRepository userRepository;
+    
     public UserService(@Autowired UserRepository userRepository) {
         this.userDetailsRepository = userRepository;
+        this.userRepository = (UserRepository)userDetailsRepository;
     }
 
     public User updateUser(User user) {
-        addExcludedFields(user);
-        User updatedUser = ((UserRepository) userDetailsRepository).save(user);
+        updateFields(user);
+        User updatedUser = userRepository.save(user);
 
         return updatedUser;
     }
 
-    private void addExcludedFields(User user) {
-        User currentUser = securityUtil.getCurrentUser();
+    private void updateFields(User user) {
+        Optional<User> currentUserOpt = userRepository.findById(user.getId());
 
-        user.setPassword(currentUser.getPassword());
-        user.setAuthorityNames(currentUser.getAuthorityNames());
+        if (currentUserOpt.isPresent()) {
+            User currentUser = currentUserOpt.get();
+            
+            //don't let user change username or email address
+            //they need be unique across the board
+            user.setUsername(currentUser.getUsername());
+            user.setEmail(currentUser.getEmail());
+            
+            user.setPassword(currentUser.getPassword());
+            user.setAuthorityNames(currentUser.getAuthorityNames());    
+        } else {
+            throw new UserNotFoundException("No user with ID: " + user.getId());
+        }
     }
 
     public void updateFailedLoginAttempts(String username) {
@@ -66,7 +78,7 @@ public class UserService extends JwtUserDetailsService {
             user.setFailedLoginAttempts(failedLoginAttempts);
             user.setLastFailedLoginTime(System.currentTimeMillis());
 
-            ((UserRepository) userDetailsRepository).save(user);
+            userRepository.save(user);
         } catch (UsernameNotFoundException e) {
             LOG.error("Problem attempting to update failed login attempts!", e);
         }
@@ -83,7 +95,7 @@ public class UserService extends JwtUserDetailsService {
         Integer failedLoginAttempts = user.getFailedLoginAttempts();
         if (failedLoginAttempts != null) {
             user.setFailedLoginAttempts(null);
-            ((UserRepository) userDetailsRepository).save(user);
+            userRepository.save(user);
         }
     }
 

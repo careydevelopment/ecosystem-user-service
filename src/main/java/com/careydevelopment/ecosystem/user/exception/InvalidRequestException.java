@@ -4,14 +4,14 @@ import java.util.List;
 
 import us.careydevelopment.util.api.model.ValidationError;
 
-public class InvalidRegistrantRequestException extends RuntimeException {
+public class InvalidRequestException extends RuntimeException {
 
-    private static final long serialVersionUID = 2395556208074390293L;
+    private static final long serialVersionUID = 9155139576610874161L;
 
     private List<ValidationError> errors;
     
-    public InvalidRegistrantRequestException(List<ValidationError> errors) {
-        super("Registrant validation failed!");
+    public InvalidRequestException(String message, List<ValidationError> errors) {
+        super(message);
         this.errors = errors;
     }
     

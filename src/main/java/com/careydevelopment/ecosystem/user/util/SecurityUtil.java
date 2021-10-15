@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 
 import com.careydevelopment.ecosystem.user.model.User;
 
+import us.careydevelopment.ecosystem.jwt.constants.Authority;
+
 @Component
 public class SecurityUtil {
 
@@ -29,6 +31,11 @@ public class SecurityUtil {
             if (user.getId() != null) {
                 if (user.getId().equals(userId)) {
                     authorized = true;
+                } else {
+                    //if the user is an admin, can do anything
+                    if (user.getAuthorityNames() != null && user.getAuthorityNames().contains(Authority.ADMIN_ECOSYSTEM_USER)) {
+                        authorized = true;
+                    }
                 }
             }
         }

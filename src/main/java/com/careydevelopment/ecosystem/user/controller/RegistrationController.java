@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.careydevelopment.ecosystem.user.exception.EmailCodeCreateFailedException;
-import com.careydevelopment.ecosystem.user.exception.InvalidRegistrantRequestException;
 import com.careydevelopment.ecosystem.user.exception.TextCodeCreateFailedException;
 import com.careydevelopment.ecosystem.user.exception.UserSaveFailedException;
 import com.careydevelopment.ecosystem.user.model.Registrant;
@@ -43,13 +42,6 @@ public class RegistrationController {
 
     @Autowired
     private RegistrantAuthenticationRepository registrantAuthenticationRepository;
-
-    @ExceptionHandler(InvalidRegistrantRequestException.class)
-    public ResponseEntity<IRestResponse<List<ValidationError>>> invalidRegistrant(
-            InvalidRegistrantRequestException ex) {
-        List<ValidationError> errors = ex.getErrors();
-        return ResponseEntityUtil.createResponseEntityWithValidationErrors(errors);
-    }
 
     @ExceptionHandler(UserSaveFailedException.class)
     public ResponseEntity<IRestResponse<Void>> userSaveFailed() {

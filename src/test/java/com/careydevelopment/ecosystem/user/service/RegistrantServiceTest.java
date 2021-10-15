@@ -12,7 +12,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.careydevelopment.ecosystem.user.exception.EmailCodeCreateFailedException;
-import com.careydevelopment.ecosystem.user.exception.InvalidRegistrantRequestException;
+import com.careydevelopment.ecosystem.user.exception.InvalidRequestException;
 import com.careydevelopment.ecosystem.user.exception.ServiceException;
 import com.careydevelopment.ecosystem.user.exception.UserSaveFailedException;
 import com.careydevelopment.ecosystem.user.harness.UserHarness;
@@ -146,7 +146,7 @@ public class RegistrantServiceTest {
         Mockito.when(userService.search(Mockito.any(UserSearchCriteria.class)))
                 .thenReturn(List.of(user));
 
-        Assertions.assertThrows(InvalidRegistrantRequestException.class,
+        Assertions.assertThrows(InvalidRequestException.class,
                 () -> registrantService.validateRegistrant(registrant, new ArrayList<ValidationError>()));
     }
 }

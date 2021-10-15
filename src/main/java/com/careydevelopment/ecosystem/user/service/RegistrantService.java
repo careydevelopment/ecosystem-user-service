@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.careydevelopment.ecosystem.user.exception.EmailCodeCreateFailedException;
-import com.careydevelopment.ecosystem.user.exception.InvalidRegistrantRequestException;
+import com.careydevelopment.ecosystem.user.exception.InvalidRequestException;
 import com.careydevelopment.ecosystem.user.exception.ServiceException;
 import com.careydevelopment.ecosystem.user.exception.TextCodeCreateFailedException;
 import com.careydevelopment.ecosystem.user.exception.UserSaveFailedException;
@@ -237,7 +237,7 @@ public class RegistrantService {
         LOG.debug("validation is " + errors);
 
         if (errors.size() > 0) {
-            throw new InvalidRegistrantRequestException(errors);
+            throw new InvalidRequestException("Invalid registrant", errors);
         }
     }
 
