@@ -10,7 +10,7 @@ public class UserFileNameUtil extends FileNameUtil {
         String fileName = createTimestampedUniqueFileName(user.getId());
 
         fileName = appendExtensionFromOriginalFileName(fileName, originalFileName);
-        
+
         return fileName;
     }
 }

@@ -26,45 +26,43 @@ import us.careydevelopment.ecosystem.file.exception.MissingFileException;
 public class UserFileUtil extends FileUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(FileUtil.class);
-    
-    
-    public UserFileUtil(@Value("${user.files.base.path}") String userFilesBasePath, @Value("${max.file.upload.size}") Long maxFileUploadSize) {
+
+    public UserFileUtil(@Value("${user.files.base.path}") String userFilesBasePath,
+            @Value("${max.file.upload.size}") Long maxFileUploadSize) {
         this.maxFileUploadSize = maxFileUploadSize;
         this.userFilesBasePath = userFilesBasePath;
     }
-    
-    
+
     public Path fetchProfilePhotoByUserId(String userId) throws ImageRetrievalException {
         Path imagePath = null;
-        
+
         Path rootLocation = Paths.get(getRootLocationForUserProfileImageUpload(userId));
         LOG.debug("Fetching profile image from " + rootLocation.toString());
 
         try {
             if (rootLocation.toFile().exists()) {
                 Iterator<Path> iterator = Files.newDirectoryStream(rootLocation).iterator();
-                
+
                 if (iterator.hasNext()) {
-                    imagePath = iterator.next();                
+                    imagePath = iterator.next();
                     LOG.debug("File name is " + imagePath);
-                }            
+                }
             }
         } catch (IOException ie) {
             throw new ImageRetrievalException(ie.getMessage());
         }
-        
+
         return imagePath;
     }
-    
-    
-    public void saveProfilePhoto(MultipartFile file, User user) throws MissingFileException, FileTooLargeException, CopyFileException {
+
+    public void saveProfilePhoto(MultipartFile file, User user)
+            throws MissingFileException, FileTooLargeException, CopyFileException {
         validateFile(file, maxFileUploadSize);
         Path rootLocation = Paths.get(getRootLocationForUserProfileImageUpload(user));
         deleteAllFilesInDirectory(rootLocation);
         saveFile(file, user, rootLocation);
     }
 
-    
     private void saveFile(MultipartFile file, User user, Path rootLocation) throws CopyFileException {
         try (InputStream is = file.getInputStream()) {
             String newFileName = getNewFileName(file, user);
@@ -75,42 +73,41 @@ public class UserFileUtil extends FileUtil {
         }
     }
 
-    
     private String getNewFileName(MultipartFile file, User user) {
         LOG.debug("File name is " + file.getOriginalFilename());
-                
+
         String newFileName = UserFileNameUtil.createFileName(user, file.getOriginalFilename());
         LOG.debug("New file name is " + newFileName);
-        
+
         return newFileName;
     }
-    
-    
+
     public String getRootLocationForUserUpload(User user) {
-        if (user == null) throw new IllegalArgumentException("No user provided!");
+        if (user == null)
+            throw new IllegalArgumentException("No user provided!");
         return this.getRootLocationForUserUpload(user.getId());
     }
-    
-    
+
     public String getRootLocationForUserProfileImageUpload(String userId) {
-        if (StringUtils.isEmpty(userId)) throw new IllegalArgumentException("No user id!");
+        if (StringUtils.isEmpty(userId))
+            throw new IllegalArgumentException("No user id!");
 
         String base = getRootLocationForUserUpload(userId);
-        
+
         StringBuilder builder = new StringBuilder(base);
         builder.append("/");
         builder.append(PROFILE_DIR);
-        
+
         String location = builder.toString();
-        
+
         createDirectoryIfItDoesntExist(location);
-        
+
         return location;
-    }   
-    
-    
+    }
+
     public String getRootLocationForUserProfileImageUpload(User user) {
-        if (user == null) throw new IllegalArgumentException("No user provided!");
+        if (user == null)
+            throw new IllegalArgumentException("No user provided!");
         return this.getRootLocationForUserProfileImageUpload(user.getId());
-    }   
+    }
 }

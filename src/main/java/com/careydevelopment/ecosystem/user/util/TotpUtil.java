@@ -14,10 +14,8 @@ public class TotpUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(TotpUtil.class);
 
-    
     @Value("${tfa.secret.key}")
     private String secretKey;
-    
 
     public String getTOTPCode() {
         Base32 base32 = new Base32();
