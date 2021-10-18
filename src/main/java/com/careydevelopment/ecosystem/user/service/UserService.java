@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.careydevelopment.ecosystem.user.exception.ServiceException;
 import com.careydevelopment.ecosystem.user.exception.UserNotFoundException;
 import com.careydevelopment.ecosystem.user.model.User;
 import com.careydevelopment.ecosystem.user.model.UserSearchCriteria;
@@ -31,22 +32,28 @@ public class UserService extends JwtUserDetailsService {
     @Autowired
     private MongoTemplate mongoTemplate;
     
-    private UserRepository userRepository;
-    
     public UserService(@Autowired UserRepository userRepository) {
         this.userDetailsRepository = userRepository;
-        this.userRepository = (UserRepository)userDetailsRepository;
     }
 
+    private UserRepository getUserRepository() {
+        return (UserRepository)userDetailsRepository;
+    }
+    
     public User updateUser(User user) {
         updateFields(user);
-        User updatedUser = userRepository.save(user);
-
-        return updatedUser;
+        
+        try {
+            User updatedUser = getUserRepository().save(user);
+            return updatedUser;
+        } catch (Exception e) {
+            LOG.error("Problem updating user!", e);
+            throw new ServiceException("Problem updating user!");
+        }
     }
 
     private void updateFields(User user) {
-        Optional<User> currentUserOpt = userRepository.findById(user.getId());
+        Optional<User> currentUserOpt = getUserRepository().findById(user.getId());
 
         if (currentUserOpt.isPresent()) {
             User currentUser = currentUserOpt.get();
@@ -78,7 +85,7 @@ public class UserService extends JwtUserDetailsService {
             user.setFailedLoginAttempts(failedLoginAttempts);
             user.setLastFailedLoginTime(System.currentTimeMillis());
 
-            userRepository.save(user);
+            getUserRepository().save(user);
         } catch (UsernameNotFoundException e) {
             LOG.error("Problem attempting to update failed login attempts!", e);
         }
@@ -95,7 +102,7 @@ public class UserService extends JwtUserDetailsService {
         Integer failedLoginAttempts = user.getFailedLoginAttempts();
         if (failedLoginAttempts != null) {
             user.setFailedLoginAttempts(null);
-            userRepository.save(user);
+            getUserRepository().save(user);
         }
     }
 
@@ -125,4 +132,4 @@ public class UserService extends JwtUserDetailsService {
 
         return users;
     }
-}
+} 

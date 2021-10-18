@@ -3,7 +3,6 @@ package com.careydevelopment.ecosystem.user.controller;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -33,7 +32,7 @@ import com.careydevelopment.ecosystem.user.model.User;
 import com.careydevelopment.ecosystem.user.model.UserSearchCriteria;
 import com.careydevelopment.ecosystem.user.repository.UserRepository;
 import com.careydevelopment.ecosystem.user.service.UserService;
-import com.careydevelopment.ecosystem.user.util.SecurityUtil;
+import com.careydevelopment.ecosystem.user.util.SessionUtil;
 import com.careydevelopment.ecosystem.user.util.UserFileUtil;
 import com.careydevelopment.ecosystem.user.util.UserUtil;
 
@@ -43,9 +42,7 @@ import us.careydevelopment.ecosystem.jwt.constants.CookieConstants;
 import us.careydevelopment.util.api.cookie.CookieUtil;
 import us.careydevelopment.util.api.input.InputSanitizer;
 import us.careydevelopment.util.api.model.IRestResponse;
-import us.careydevelopment.util.api.model.ValidationError;
 import us.careydevelopment.util.api.response.ResponseEntityUtil;
-import us.careydevelopment.util.api.validation.ValidationUtil;
 
 @RestController
 public class UserController {
@@ -62,7 +59,7 @@ public class UserController {
     private UserFileUtil fileUtil;
 
     @Autowired
-    private SecurityUtil securityUtil;
+    private SessionUtil sessionUtil;
     
     @Autowired
     private UserUtil userUtil;
@@ -97,7 +94,7 @@ public class UserController {
 
     @PostMapping("/profileImage")
     public ResponseEntity<IRestResponse<Void>> saveProfileImage(@RequestParam("file") MultipartFile file) {
-        User user = securityUtil.getCurrentUser();
+        User user = sessionUtil.getCurrentUser();
         LOG.debug("User uploading is " + user);
 
         //TODO: Use exception handler here
@@ -145,7 +142,7 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<?> me() {
         try {
-            User user = securityUtil.getCurrentUser();
+            User user = sessionUtil.getCurrentUser();
             return ResponseEntityUtil.createSuccessfulResponseEntity("User successfully retrieved", HttpStatus.OK.value(), user);
         } catch (Exception e) {
             LOG.error("Problem retrieving current user!", e);

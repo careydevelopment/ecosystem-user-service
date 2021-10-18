@@ -47,7 +47,6 @@ public class UserUtil {
         return user;
     }  
     
-    
     public void validateUserUpdate(User user, BindingResult bindingResult) {
         boolean allowed = securityUtil.isAuthorizedByUserId(user.getId());
 
