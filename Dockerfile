@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11:jre-11.0.10_9-alpine
+FROM eclipse-temurin:17
 
 COPY ./target/ecosystem-user-service.jar /
 COPY ./carey-development-service-config.json /
