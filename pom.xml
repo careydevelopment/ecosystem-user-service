@@ -4,19 +4,19 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.careydevelopment.ecosystem.user</groupId>
 	<artifactId>ecosystem-user-service</artifactId>
-	<version>1.5.0</version>
+	<version>1.7.0</version>
 
 	<parent>
 		<groupId>us.careydevelopment.ecosystem</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.8.0-RELEASE</version>
+		<version>1.8.4</version>
 	</parent>
 
 	<dependencies>
 		<dependency>
 			<groupId>us.careydevelopment.ecosystem</groupId>
 			<artifactId>jwt-security</artifactId>
-			<version>2.1.1</version>
+			<version>2.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>us.careydevelopment.ecosystem</groupId>
