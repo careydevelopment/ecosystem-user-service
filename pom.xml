@@ -13,11 +13,11 @@
 	</parent>
 
 	<dependencies>
-		<dependency>
-			<groupId>us.careydevelopment.ecosystem</groupId>
-			<artifactId>jwt-security</artifactId>
-			<version>2.2.0</version>
-		</dependency>
+        <dependency>
+            <groupId>us.careydevelopment.ecosystem</groupId>
+            <artifactId>jwt-security</artifactId>
+            <version>2.4.0</version>
+        </dependency>
 		<dependency>
 			<groupId>us.careydevelopment.ecosystem</groupId>
 			<artifactId>file-util</artifactId>
